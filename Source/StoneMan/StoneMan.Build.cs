@@ -4,13 +4,22 @@ using UnrealBuildTool;
 
 public class StoneMan : ModuleRules
 {
-	public StoneMan(ReadOnlyTargetRules Target) : base(Target)
+	public StoneMan(ReadOnlyTargetRules target) : base(target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
+		
+		PublicIncludePaths.AddRange(new string[]
+		{
+			"StoneMan/Public",
+			"StoneMan/Public/Character",
+			"StoneMan/Public/Character/AICharacter",
+			"StoneMan/Public/Character/PlayerCharacter",
+			"StoneMan/Public/Character/Components",
+		});
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
