@@ -8,16 +8,22 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogPlayerCharacter, All, All);
+
 ASMPlayerCharacter::ASMPlayerCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<USMMovementComponent>(CharacterMovementComponentName))
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	bUseControllerRotationYaw = false;
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
 	SpringArmComponent->SetupAttachment(GetCapsuleComponent());
 	SpringArmComponent->TargetArmLength = 600.f;
 	SpringArmComponent->bUsePawnControlRotation = true;
+	SpringArmComponent->bEnableCameraLag = true;
+	SpringArmComponent->bEnableCameraRotationLag = true;
+	SpringArmComponent->CameraLagSpeed = 8.f;
+	SpringArmComponent->CameraRotationLagSpeed = 8.f;
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
 	CameraComponent->SetupAttachment(SpringArmComponent);
@@ -31,12 +37,19 @@ void ASMPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAxis("MoveRight", this, &ThisClass::MoveRight);
 	PlayerInputComponent->BindAxis("Turn", this, &ThisClass::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &ThisClass::AddControllerPitchInput);
+
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ThisClass::Jump);
 }
 
-void ASMPlayerCharacter::MoveForward(const float AxisValue)
+void ASMPlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void ASMPlayerCharacter::MoveForward(float AxisValue)
 {
 	if(FMath::IsNearlyZero(AxisValue)) return;
-	
+
 	const auto Rotation = GetControlRotation();
 	const auto YawRotation = FRotator(0.f, Rotation.Yaw, 0.f);
 
@@ -55,4 +68,9 @@ void ASMPlayerCharacter::MoveRight(const float AxisValue)
 	const auto Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
 	AddMovementInput(Direction, AxisValue);
+}
+
+void ASMPlayerCharacter::Jump()
+{
+	Super::Jump();
 }

@@ -10,5 +10,10 @@ UCLASS()
 class STONEMAN_API ASMPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+protected:
+	virtual void OnPossess(APawn* InPawn) override;
+
+	
 	
 };

@@ -3,12 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SMPlayerCharacterState.h"
+#include "SMCoreTypes.h"
 #include "Character/SMCharacterBase.h"
 #include "SMPlayerCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
+
+DECLARE_DELEGATE_OneParam(FTestSignature, float)
 
 UCLASS()
 class STONEMAN_API ASMPlayerCharacter : public ASMCharacterBase
@@ -20,6 +22,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
+	virtual void BeginPlay() override;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
 	USpringArmComponent* SpringArmComponent;
 
@@ -27,8 +31,12 @@ protected:
 	UCameraComponent* CameraComponent;
 
 private:
-	SMPlayerCharacterState PlayerCharacterState = SMPlayerCharacterState(this);
-	
-	void MoveForward(const float AxisValue);
+	ESMPlayerState PlayerState = ESMPlayerState::Idle;
+
+	void MoveForward(float AxisValue);
 	void MoveRight(const float AxisValue);
+
+	virtual void Jump() override;
+
+	void SetState(const ESMPlayerState NewState) { PlayerState = NewState; }
 };
