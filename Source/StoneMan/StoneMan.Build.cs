@@ -15,6 +15,7 @@ public class StoneMan : ModuleRules
 		PublicIncludePaths.AddRange(new string[]
 		{
 			"StoneMan/Public",
+			"StoneMan/Public/Actors",
 			"StoneMan/Public/Animation",
 			"StoneMan/Public/Character",
 			"StoneMan/Public/Character/AICharacter",

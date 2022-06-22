@@ -9,8 +9,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
-
-DECLARE_DELEGATE_OneParam(FTestSignature, float)
+class USMPushComponent;
 
 UCLASS()
 class STONEMAN_API ASMPlayerCharacter : public ASMCharacterBase
@@ -29,6 +28,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
 	UCameraComponent* CameraComponent;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
+    USMPushComponent* PushComponent;
 
 private:
 	ESMPlayerState PlayerState = ESMPlayerState::Idle;
