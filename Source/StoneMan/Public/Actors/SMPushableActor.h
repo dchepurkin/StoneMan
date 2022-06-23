@@ -16,9 +16,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void OnConstruction(const FTransform& Transform) override;
 
-protected:
-	virtual void BeginPlay() override;
+	const FTransform& GetClosestPushTransform(const AActor* PushingActor);
 
+protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMPushableActor)
 	UStaticMeshComponent* StaticMesh;
 

@@ -4,7 +4,6 @@
 
 #include "SMDestructComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "GeometryCollection/GeometryCollectionComponent.h"
 
 ASMCharacterBase::ASMCharacterBase(const FObjectInitializer& ObjectInitializer)
 {
