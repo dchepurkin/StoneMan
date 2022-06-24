@@ -20,6 +20,8 @@ public:
 	explicit ASMPlayerCharacter(const FObjectInitializer& ObjectInitializer);
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	ESMPlayerState GetState() const { return PlayerState; }
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -28,15 +30,18 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
 	UCameraComponent* CameraComponent;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
-    USMPushComponent* PushComponent;
+	USMPushComponent* PushComponent;
 
 private:
 	ESMPlayerState PlayerState = ESMPlayerState::Idle;
 
 	void MoveForward(float AxisValue);
 	void MoveRight(const float AxisValue);
+
+	void OnStartPush();
+	void OnStopPush();
 
 	virtual void Jump() override;
 

@@ -8,6 +8,9 @@
 
 class ASMPushableActor;
 
+DECLARE_MULTICAST_DELEGATE(FOnStartPushSignature)
+DECLARE_MULTICAST_DELEGATE(FOnStopPushSignature)
+
 UCLASS(ClassGroup=(Custom), Blueprintable, DefaultToInstanced, BlueprintType, meta=(BlueprintSpawnableComponent))
 class STONEMAN_API USMPushComponent : public UActorComponent
 {
@@ -15,14 +18,14 @@ class STONEMAN_API USMPushComponent : public UActorComponent
 
 public:
 	USMPushComponent();
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	FOnStartPushSignature OnStartPush;
+	FOnStopPushSignature OnStopPush;
 
 	void StartPush();
 	void StopPush();
 
 protected:
-	virtual void BeginPlay() override;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMPushComponent, meta=(ClampMin = 0.1f))
 	float PushRange = 100.f;
 
@@ -37,4 +40,5 @@ private:
 
 	void TryToPush();
 	bool LineTrace(FHitResult& HitResult) const;
+	bool CanPush() const;
 };

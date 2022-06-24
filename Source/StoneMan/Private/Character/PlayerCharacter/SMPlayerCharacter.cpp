@@ -27,6 +27,7 @@ ASMPlayerCharacter::ASMPlayerCharacter(const FObjectInitializer& ObjectInitializ
 	SpringArmComponent->bEnableCameraRotationLag = true;
 	SpringArmComponent->CameraLagSpeed = 8.f;
 	SpringArmComponent->CameraRotationLagSpeed = 8.f;
+	SpringArmComponent->CameraLagMaxDistance = 20.f;
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
 	CameraComponent->SetupAttachment(SpringArmComponent);
@@ -51,11 +52,14 @@ void ASMPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 void ASMPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	PushComponent->OnStartPush.AddUObject(this, &ThisClass::OnStartPush);
+	PushComponent->OnStopPush.AddUObject(this, &ThisClass::OnStopPush);
 }
 
 void ASMPlayerCharacter::MoveForward(float AxisValue)
 {
-	if(FMath::IsNearlyZero(AxisValue)) return;
+	if(PlayerState == ESMPlayerState::Push || FMath::IsNearlyZero(AxisValue)) return;
 
 	const auto Rotation = GetControlRotation();
 	const auto YawRotation = FRotator(0.f, Rotation.Yaw, 0.f);
@@ -67,7 +71,7 @@ void ASMPlayerCharacter::MoveForward(float AxisValue)
 
 void ASMPlayerCharacter::MoveRight(const float AxisValue)
 {
-	if(FMath::IsNearlyZero(AxisValue)) return;
+	if(PlayerState == ESMPlayerState::Push || FMath::IsNearlyZero(AxisValue)) return;
 
 	const auto Rotation = GetControlRotation();
 	const auto YawRotation = FRotator(0.f, Rotation.Yaw, 0.f);
@@ -80,4 +84,14 @@ void ASMPlayerCharacter::MoveRight(const float AxisValue)
 void ASMPlayerCharacter::Jump()
 {
 	Super::Jump();
+}
+
+void ASMPlayerCharacter::OnStartPush()
+{
+	SetState(ESMPlayerState::Push);
+}
+
+void ASMPlayerCharacter::OnStopPush()
+{
+	SetState(ESMPlayerState::Idle);
 }

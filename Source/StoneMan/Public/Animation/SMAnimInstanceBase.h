@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "SMCoreTypes.h"
 #include "SMAnimInstanceBase.generated.h"
 
 class ASMCharacterBase;
@@ -20,7 +21,7 @@ public:
 protected:
 	UPROPERTY()
 	ASMCharacterBase* Character;
-	
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category=SMAnimation)
 	float Speed = 0.f;
 
@@ -32,9 +33,12 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category=SMAnimation)
 	bool IsMakeSecondJump = false;
-	
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category=SMAnimation)
+	ESMPlayerState PlayerState;
 
 private:
 	bool CanMakeSecondJump = true;
 	bool TryToMakeSecondJump();
+	ESMPlayerState GetPlayerCharacterState() const;
 };
