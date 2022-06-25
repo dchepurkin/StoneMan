@@ -2,8 +2,8 @@
 
 #include "Actors/SMPushableActor.h"
 
-#include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogPushableActor, All, All);
 
@@ -53,20 +53,22 @@ void ASMPushableActor::BeginPlay()
 void ASMPushableActor::OnAxisCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                                                    int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if(!GetPushComponent(OtherActor)) return;
+
 	StaticMesh->IgnoreActorWhenMoving(OtherActor, true);
-	IsPlayerCharacterOverlaped = IsActorHavePushComponent(OtherActor);
+	PushingActor = OtherActor;
 }
 
 void ASMPushableActor::OnAxisCollisionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                                                  int32 OtherBodyIndex)
 {
-	IsPlayerCharacterOverlaped = !IsActorHavePushComponent(OtherActor);
+	if(PushVector.IsZero() && GetPushComponent(OtherActor)) PushingActor = nullptr;
 }
 
 void ASMPushableActor::OnEndAxisCollisionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                                                     int32 OtherBodyIndex)
 {
-	if(!OtherActor || !IsMoving) return;
+	if(!OtherActor || PushVector.IsZero()) return;
 
 	const FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::KeepWorld, true);
 	OtherActor->AttachToActor(this, AttachmentTransformRules);
@@ -78,21 +80,26 @@ void ASMPushableActor::Tick(float DeltaTime)
 
 	const auto PushDuration = PushSpeed * DeltaTime * PushVector;
 	AddActorWorldOffset(PushDuration, true);
+
+	if(!IsFreeBehindTheActor(PushVector))
+	{
+		if(const auto PushComponent = GetPushComponent(PushingActor)) PushComponent->RestartPush();
+	}
 }
 
-const FTransform& ASMPushableActor::GetClosestPushTransform(const AActor* PushingActor)
+const FTransform& ASMPushableActor::GetClosestPushTransform(const AActor* Actor)
 {
-	if(!PushingActor || PushTransforms.IsEmpty()) return FTransform::Identity;
+	if(!Actor || PushTransforms.IsEmpty()) return FTransform::Identity;
 
 	int32 ClosestIndex = 0;
 
 	auto PushTransformWorldLocation = GetActorTransform().TransformPosition(PushTransforms[ClosestIndex].GetLocation());
-	auto ClosestDistance = FVector::DistXY(PushingActor->GetActorLocation(), PushTransformWorldLocation);
+	auto ClosestDistance = FVector::DistXY(Actor->GetActorLocation(), PushTransformWorldLocation);
 
 	for(auto i = 1; i < PushTransforms.Num(); ++i)
 	{
 		PushTransformWorldLocation = GetActorTransform().TransformPosition(PushTransforms[i].GetLocation());
-		const auto CurrentDistance = FVector::DistXY(PushingActor->GetActorLocation(), PushTransformWorldLocation);
+		const auto CurrentDistance = FVector::DistXY(Actor->GetActorLocation(), PushTransformWorldLocation);
 
 		if(CurrentDistance < ClosestDistance)
 		{
@@ -104,26 +111,53 @@ const FTransform& ASMPushableActor::GetClosestPushTransform(const AActor* Pushin
 	return PushTransforms[ClosestIndex];
 }
 
-bool ASMPushableActor::CanMove()
+bool ASMPushableActor::CanMove(const FVector& MoveDirection)
 {
-	return IsPlayerCharacterOverlaped;
+	return PushingActor != nullptr && IsFreeBehindTheActor(MoveDirection);
 }
 
-void ASMPushableActor::StartPush(const FVector& NewPushVector)
+void ASMPushableActor::StartMoving(const FVector& NewPushVector)
 {
 	PushVector = NewPushVector;
-	IsMoving = true;
 	SetActorTickEnabled(true);
 }
 
-void ASMPushableActor::StopPush()
+void ASMPushableActor::StopMoving()
 {
 	PushVector = FVector::ZeroVector;
-	IsMoving = false;
+	PushingActor = nullptr;
 	SetActorTickEnabled(false);
 }
 
-bool ASMPushableActor::IsActorHavePushComponent(AActor* Actor)
+USMPushComponent* ASMPushableActor::GetPushComponent(const AActor* Actor)
 {
-	return Actor ? Actor->FindComponentByClass<USMPushComponent>() != nullptr : false;
+	return Actor ? Actor->FindComponentByClass<USMPushComponent>() : nullptr;
+}
+
+bool ASMPushableActor::IsFreeBehindTheActor(const FVector& MoveDirection)
+{
+	if(!GetWorld() || !StaticMesh) return false;
+
+	const auto TracePoint = GetActorLocation() + MoveDirection;
+
+	FVector MinLocalBounds;
+	FVector MaxLocalBounds;
+	StaticMesh->GetLocalBounds(MinLocalBounds, MaxLocalBounds);
+
+	const auto HalfSize = MaxLocalBounds * StaticMesh->GetComponentScale();
+	FHitResult HitResult;
+
+	UKismetSystemLibrary::BoxTraceSingle(GetWorld(),
+	                                     TracePoint,
+	                                     TracePoint,
+	                                     HalfSize,
+	                                     GetActorRotation(),
+	                                     UEngineTypes::ConvertToTraceType(ECC_Visibility),
+	                                     false,
+	                                     {this},
+	                                     EDrawDebugTrace::None,
+	                                     HitResult,
+	                                     true);
+
+	return !HitResult.bBlockingHit;
 }

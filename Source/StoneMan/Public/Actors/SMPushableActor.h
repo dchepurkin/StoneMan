@@ -18,11 +18,11 @@ public:
 	ASMPushableActor();
 	virtual void Tick(float DeltaTime) override;
 
-	const FTransform& GetClosestPushTransform(const AActor* PushingActor);
-	bool CanMove();
+	const FTransform& GetClosestPushTransform(const AActor* Actor);
+	bool CanMove(const FVector& MoveDirection);
 
-	void StartPush(const FVector& NewPushVector);
-	void StopPush();
+	void StartMoving(const FVector& NewPushVector);
+	void StopMoving();
 
 protected:
 	virtual void BeginPlay() override;
@@ -45,12 +45,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=SMPushableActor, meta=(MakeEditWidget=true))
 	TArray<FTransform> PushTransforms;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=SMPushableActor,meta=(ClampMin = 0.f))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=SMPushableActor, meta=(ClampMin = 0.f))
 	float PushSpeed = 100.f;
-	
+
 private:
-	bool IsPlayerCharacterOverlaped = false;
-	bool IsMoving = false;
+	UPROPERTY()
+	AActor* PushingActor;
+
 	FVector PushVector = FVector::ZeroVector;
 
 	UFUNCTION()
@@ -63,5 +64,6 @@ private:
 	UFUNCTION()
 	void OnEndAxisCollisionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	bool IsActorHavePushComponent(AActor* Actor);
+	USMPushComponent* GetPushComponent(const AActor* Actor);
+	bool IsFreeBehindTheActor(const FVector& MoveDirection);
 };

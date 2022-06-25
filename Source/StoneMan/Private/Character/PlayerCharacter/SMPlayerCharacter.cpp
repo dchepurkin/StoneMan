@@ -84,6 +84,7 @@ void ASMPlayerCharacter::MoveRight(const float AxisValue)
 void ASMPlayerCharacter::Jump()
 {
 	Super::Jump();
+	if(PlayerState == ESMPlayerState::Push) PushComponent->RestartPush();
 }
 
 void ASMPlayerCharacter::OnStartPush()

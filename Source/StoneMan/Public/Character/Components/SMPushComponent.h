@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Components/TimelineComponent.h"
 #include "SMPushComponent.generated.h"
 
 class ASMPushableActor;
@@ -18,12 +19,15 @@ class STONEMAN_API USMPushComponent : public UActorComponent
 
 public:
 	USMPushComponent();
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	FOnStartPushSignature OnStartPush;
 	FOnStopPushSignature OnStopPush;
 
 	void StartPush();
 	void StopPush();
+	void RestartPush();
+	void TryToPush();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMPushComponent, meta=(ClampMin = 0.1f))
@@ -36,9 +40,7 @@ private:
 	UPROPERTY()
 	ASMPushableActor* CurrentPushable;
 
-	FTimerHandle TryToPushTimerHandle;
-
-	void TryToPush();
 	bool LineTrace(FHitResult& HitResult) const;
-	bool CanPush() const;
+	bool CanPush(ASMPushableActor* PushableActor) const;
+	bool IsOwnerFalling() const;
 };
