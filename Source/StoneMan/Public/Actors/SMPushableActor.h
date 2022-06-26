@@ -66,4 +66,6 @@ private:
 
 	USMPushComponent* GetPushComponent(const AActor* Actor);
 	bool IsFreeBehindTheActor(const FVector& MoveDirection);
+
+	void SwitchAxisCollision() const;
 };

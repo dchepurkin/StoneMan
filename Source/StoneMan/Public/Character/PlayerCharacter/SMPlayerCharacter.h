@@ -34,6 +34,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
 	USMPushComponent* PushComponent;
 
+	virtual void OnDeath() override;
+
 private:
 	ESMPlayerState PlayerState = ESMPlayerState::Idle;
 
@@ -44,6 +46,6 @@ private:
 	void OnStopPush();
 
 	virtual void Jump() override;
-
+	
 	void SetState(const ESMPlayerState NewState) { PlayerState = NewState; }
 };

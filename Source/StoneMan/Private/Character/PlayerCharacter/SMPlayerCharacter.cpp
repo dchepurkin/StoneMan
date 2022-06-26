@@ -2,6 +2,7 @@
 
 #include "Character/PlayerCharacter/SMPlayerCharacter.h"
 
+#include "SMHealthComponent.h"
 #include "SMPushComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -83,8 +84,10 @@ void ASMPlayerCharacter::MoveRight(const float AxisValue)
 
 void ASMPlayerCharacter::Jump()
 {
-	Super::Jump();
 	if(PlayerState == ESMPlayerState::Push) PushComponent->RestartPush();
+
+	if(HealthComponent->IsFallingVelocityIsDamaged(GetVelocity())) return;
+	Super::Jump();
 }
 
 void ASMPlayerCharacter::OnStartPush()
@@ -95,4 +98,11 @@ void ASMPlayerCharacter::OnStartPush()
 void ASMPlayerCharacter::OnStopPush()
 {
 	SetState(ESMPlayerState::Idle);
+}
+
+void ASMPlayerCharacter::OnDeath()
+{
+	Super::OnDeath();
+	const auto PlayerContoller = GetController<APlayerController>();
+	if(PlayerContoller) DisableInput(PlayerContoller);
 }

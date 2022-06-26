@@ -55,6 +55,7 @@ void ASMPushableActor::OnAxisCollisionBeginOverlap(UPrimitiveComponent* Overlapp
 {
 	if(!GetPushComponent(OtherActor)) return;
 
+	StaticMesh->ClearMoveIgnoreActors();
 	StaticMesh->IgnoreActorWhenMoving(OtherActor, true);
 	PushingActor = OtherActor;
 }
@@ -126,6 +127,8 @@ void ASMPushableActor::StopMoving()
 {
 	PushVector = FVector::ZeroVector;
 	PushingActor = nullptr;
+	SwitchAxisCollision();
+
 	SetActorTickEnabled(false);
 }
 
@@ -160,4 +163,13 @@ bool ASMPushableActor::IsFreeBehindTheActor(const FVector& MoveDirection)
 	                                     true);
 
 	return !HitResult.bBlockingHit;
+}
+
+void ASMPushableActor::SwitchAxisCollision() const
+{
+	XAxisCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	YAxisCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	XAxisCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	YAxisCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }

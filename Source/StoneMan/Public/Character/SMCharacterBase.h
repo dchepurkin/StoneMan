@@ -8,6 +8,7 @@
 
 class UGeometryCollectionComponent;
 class USMDestructComponent;
+class USMHealthComponent;
 
 UCLASS(Abstract)
 class STONEMAN_API ASMCharacterBase : public ACharacter
@@ -22,6 +23,11 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
 	USMDestructComponent* DestructComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
+	USMHealthComponent* HealthComponent;
+
+	virtual void OnDeath();
 
 private:
 };

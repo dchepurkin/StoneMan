@@ -5,4 +5,5 @@ enum class ESMPlayerState : uint8
 {
 	Idle = 0,
 	Push,
+	Dead,
 };
