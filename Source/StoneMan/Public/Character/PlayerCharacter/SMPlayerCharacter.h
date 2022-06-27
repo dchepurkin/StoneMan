@@ -8,7 +8,7 @@
 #include "SMPlayerCharacter.generated.h"
 
 class USpringArmComponent;
-class UCameraComponent;
+class USMCameraComponent;
 class USMPushComponent;
 
 UCLASS()
@@ -29,7 +29,7 @@ protected:
 	USpringArmComponent* SpringArmComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
-	UCameraComponent* CameraComponent;
+	USMCameraComponent* CameraComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
 	USMPushComponent* PushComponent;
@@ -46,6 +46,6 @@ private:
 	void OnStopPush();
 
 	virtual void Jump() override;
-	
+
 	void SetState(const ESMPlayerState NewState) { PlayerState = NewState; }
 };

@@ -20,7 +20,7 @@ void USMHealthComponent::BeginPlay()
 	if(const auto Character = GetOwner<ACharacter>())
 	{
 		Character->OnTakeAnyDamage.AddDynamic(this, &ThisClass::OnTakeAnyDamage);
-		Character->LandedDelegate.AddDynamic(this, &ThisClass::OnLanded);
+		if(LandedDamage) Character->LandedDelegate.AddDynamic(this, &ThisClass::OnLanded);
 	}
 }
 
@@ -46,7 +46,7 @@ void USMHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, con
 void USMHealthComponent::OnAutoHeal()
 {
 	MakeHeal(AutoHealAmount);
-	if(FMath::IsNearlyEqual(CurrentHealth, MaxHealth))SetAutoHealTimerEnabled(false);
+	if(FMath::IsNearlyEqual(CurrentHealth, MaxHealth)) SetAutoHealTimerEnabled(false);
 }
 
 void USMHealthComponent::MakeHeal(const float HealAmout)
@@ -80,6 +80,6 @@ void USMHealthComponent::OnLanded(const FHitResult& Hit)
 	const auto Velocity = GetOwner()->GetVelocity();
 	if(!IsFallingVelocityIsDamaged(Velocity)) return;
 
-	const auto Damage = FMath::GetMappedRangeValueClamped(LandedDamageVelocity, LandedDamage, -Velocity.Z);
+	const auto Damage = FMath::GetMappedRangeValueClamped(LandedDamageVelocity, LandedDamageAmount, -Velocity.Z);
 	GetOwner()->TakeDamage(Damage, FDamageEvent(), nullptr, nullptr);
 }

@@ -1,13 +1,11 @@
 // Created by DChepurkin
 
-#include "Character/PlayerCharacter/SMPlayerCharacter.h"
-
+#include "SMPlayerCharacter.h"
 #include "SMHealthComponent.h"
 #include "SMPushComponent.h"
-#include "Camera/CameraComponent.h"
+#include "SMCameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SMMovementComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogPlayerCharacter, All, All);
@@ -15,7 +13,8 @@ DEFINE_LOG_CATEGORY_STATIC(LogPlayerCharacter, All, All);
 ASMPlayerCharacter::ASMPlayerCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<USMMovementComponent>(CharacterMovementComponentName))
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.TickInterval = 0.1f;
 	bUseControllerRotationYaw = false;
 
 	JumpMaxCount = 2;
@@ -30,7 +29,7 @@ ASMPlayerCharacter::ASMPlayerCharacter(const FObjectInitializer& ObjectInitializ
 	SpringArmComponent->CameraRotationLagSpeed = 8.f;
 	SpringArmComponent->CameraLagMaxDistance = 20.f;
 
-	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
+	CameraComponent = CreateDefaultSubobject<USMCameraComponent>("CameraComponent");
 	CameraComponent->SetupAttachment(SpringArmComponent);
 
 	PushComponent = CreateDefaultSubobject<USMPushComponent>("PushComponent");
@@ -54,6 +53,10 @@ void ASMPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	check(PushComponent)
+	check(SpringArmComponent)
+	check(CameraComponent)
+	
 	PushComponent->OnStartPush.AddUObject(this, &ThisClass::OnStartPush);
 	PushComponent->OnStopPush.AddUObject(this, &ThisClass::OnStopPush);
 }
@@ -64,7 +67,6 @@ void ASMPlayerCharacter::MoveForward(float AxisValue)
 
 	const auto Rotation = GetControlRotation();
 	const auto YawRotation = FRotator(0.f, Rotation.Yaw, 0.f);
-
 	const auto Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 
 	AddMovementInput(Direction, AxisValue);
@@ -76,7 +78,6 @@ void ASMPlayerCharacter::MoveRight(const float AxisValue)
 
 	const auto Rotation = GetControlRotation();
 	const auto YawRotation = FRotator(0.f, Rotation.Yaw, 0.f);
-
 	const auto Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
 	AddMovementInput(Direction, AxisValue);
@@ -85,7 +86,6 @@ void ASMPlayerCharacter::MoveRight(const float AxisValue)
 void ASMPlayerCharacter::Jump()
 {
 	if(PlayerState == ESMPlayerState::Push) PushComponent->RestartPush();
-
 	if(HealthComponent->IsFallingVelocityIsDamaged(GetVelocity())) return;
 	Super::Jump();
 }
@@ -105,4 +105,6 @@ void ASMPlayerCharacter::OnDeath()
 	Super::OnDeath();
 	const auto PlayerContoller = GetController<APlayerController>();
 	if(PlayerContoller) DisableInput(PlayerContoller);
+
+	PushComponent->StopPush();
 }

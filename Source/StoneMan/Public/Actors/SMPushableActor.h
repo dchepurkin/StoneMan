@@ -53,6 +53,7 @@ private:
 	AActor* PushingActor;
 
 	FVector PushVector = FVector::ZeroVector;
+	FVector StartPosition = FVector::ZeroVector;
 
 	UFUNCTION()
 	void OnAxisCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,

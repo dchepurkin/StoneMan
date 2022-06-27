@@ -21,11 +21,15 @@ void ASMCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	check(HealthComponent)
+	check(DestructComponent)
+
 	HealthComponent->OnDeath.AddUObject(this, &ThisClass::OnDeath);
 }
 
 void ASMCharacterBase::OnDeath()
 {
-	GetCharacterMovement()->DisableMovement();
+	if(GetCharacterMovement()) GetCharacterMovement()->DisableMovement();
+	if(GetCapsuleComponent()) GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	DestructComponent->Destruct();
 }

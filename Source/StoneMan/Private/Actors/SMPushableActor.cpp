@@ -48,6 +48,8 @@ void ASMPushableActor::BeginPlay()
 
 	XEndAxisCollision->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnEndAxisCollisionEndOverlap);
 	YEndAxisCollision->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnEndAxisCollisionEndOverlap);
+
+	StartPosition = GetActorLocation();
 }
 
 void ASMPushableActor::OnAxisCollisionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
