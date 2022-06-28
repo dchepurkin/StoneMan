@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SMCoreTypes.h"
 #include "Components/ActorComponent.h"
 #include "SMHealthComponent.generated.h"
 
@@ -24,6 +25,7 @@ public:
 	float GetHealthPercent() const { return CurrentHealth / MaxHealth; }
 
 	void MakeHeal(const float HealAmout);
+	void TakeDamage(const float DamageAmount);
 	bool IsDead() const;
 
 	bool IsFallingVelocityIsDamaged(const FVector& Velocity) const;
@@ -59,10 +61,7 @@ private:
 	float CurrentHealth = 0.f;
 	FTimerHandle AutoHealTimerHandle;
 
-	void SetHealth(const float NewHealth);
-
-	UFUNCTION()
-	void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
+	void SetHealth(const float NewHealth);	
 
 	UFUNCTION()
 	void OnLanded(const FHitResult& Hit);

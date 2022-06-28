@@ -4,7 +4,6 @@
 
 #include "SMPushableActor.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/KismetMathLibrary.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogPushComponent, All, All);
 
@@ -98,7 +97,7 @@ bool USMPushComponent::CanPush(ASMPushableActor* PushableActor) const
 	FRotator OwnerViewPointRotation;
 	GetOwner()->GetActorEyesViewPoint(OwnerViewPointLocation, OwnerViewPointRotation);
 
-	auto OwnerViewPointForwardVector = UKismetMathLibrary::GetForwardVector(OwnerViewPointRotation);
+	auto OwnerViewPointForwardVector = OwnerViewPointRotation.Vector();
 	OwnerViewPointForwardVector.Z = 0.f;
 	OwnerViewPointForwardVector.Normalize();
 

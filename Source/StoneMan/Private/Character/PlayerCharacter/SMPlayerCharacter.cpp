@@ -4,6 +4,8 @@
 #include "SMHealthComponent.h"
 #include "SMPushComponent.h"
 #include "SMCameraComponent.h"
+#include "SMElementComponent.h"
+#include "SMWeaponComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SMMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -47,6 +49,7 @@ void ASMPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ThisClass::Jump);
 	PlayerInputComponent->BindAction("Push", IE_Pressed, PushComponent, &USMPushComponent::StartPush);
 	PlayerInputComponent->BindAction("Push", IE_Released, PushComponent, &USMPushComponent::StopPush);
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ThisClass::Attack);
 }
 
 void ASMPlayerCharacter::BeginPlay()
@@ -56,9 +59,12 @@ void ASMPlayerCharacter::BeginPlay()
 	check(PushComponent)
 	check(SpringArmComponent)
 	check(CameraComponent)
-	
+
 	PushComponent->OnStartPush.AddUObject(this, &ThisClass::OnStartPush);
 	PushComponent->OnStopPush.AddUObject(this, &ThisClass::OnStopPush);
+
+	CameraComponent->OnCameraBeginOverlap.AddUObject(this, &ThisClass::OnCameraBeginOverlap);
+	CameraComponent->OnCameraEndOverlap.AddUObject(this, &ThisClass::OnCameraEndOverlap);
 }
 
 void ASMPlayerCharacter::MoveForward(float AxisValue)
@@ -107,4 +113,30 @@ void ASMPlayerCharacter::OnDeath()
 	if(PlayerContoller) DisableInput(PlayerContoller);
 
 	PushComponent->StopPush();
+}
+
+void ASMPlayerCharacter::OnCameraBeginOverlap(AActor* Actor)
+{
+	SetMeshVisibility(Actor != this);
+}
+
+void ASMPlayerCharacter::OnCameraEndOverlap()
+{
+	SetMeshVisibility(true);
+}
+
+void ASMPlayerCharacter::SetMeshVisibility(const bool Enabled)
+{
+	if(!GetMesh()) return;
+	GetMesh()->SetVisibility(Enabled, true);
+}
+
+void ASMPlayerCharacter::Attack()
+{
+	if(PlayerState == ESMPlayerState::Idle &&
+		!HealthComponent->IsDead() &&
+		!GetCharacterMovement()->IsFalling())
+	{
+		WeaponComponent->StartAttack(ElementComponent->GetElement());
+	}
 }

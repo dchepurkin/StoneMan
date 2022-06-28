@@ -19,7 +19,6 @@ void USMHealthComponent::BeginPlay()
 
 	if(const auto Character = GetOwner<ACharacter>())
 	{
-		Character->OnTakeAnyDamage.AddDynamic(this, &ThisClass::OnTakeAnyDamage);
 		if(LandedDamage) Character->LandedDelegate.AddDynamic(this, &ThisClass::OnLanded);
 	}
 }
@@ -30,14 +29,13 @@ void USMHealthComponent::SetHealth(const float NewHealth)
 	OnHealthChanged.Broadcast(CurrentHealth);
 }
 
-void USMHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy,
-                                         AActor* DamageCauser)
+void USMHealthComponent::TakeDamage(const float DamageAmount)
 {
-	if(Damage <= 0.f || IsDead()) return;
+	if(DamageAmount <= 0.f || IsDead()) return;
 
 	SetAutoHealTimerEnabled(false);
 
-	SetHealth(CurrentHealth - Damage);
+	SetHealth(CurrentHealth - DamageAmount);
 	if(IsDead()) OnDeath.Broadcast();
 
 	SetAutoHealTimerEnabled(true);

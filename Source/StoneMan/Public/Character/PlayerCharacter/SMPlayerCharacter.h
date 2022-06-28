@@ -41,11 +41,15 @@ private:
 
 	void MoveForward(float AxisValue);
 	void MoveRight(const float AxisValue);
+	void Attack();
 
 	void OnStartPush();
 	void OnStopPush();
+	void OnCameraBeginOverlap(AActor* Actor);
+	void OnCameraEndOverlap();
 
 	virtual void Jump() override;
 
 	void SetState(const ESMPlayerState NewState) { PlayerState = NewState; }
+	void SetMeshVisibility(const bool Enabled);
 };

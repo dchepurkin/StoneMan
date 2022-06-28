@@ -2,8 +2,6 @@
 
 #include "Character/Components/SMCameraComponent.h"
 
-#include "GameFramework/Character.h"
-
 DEFINE_LOG_CATEGORY_STATIC(LogCameraComponent, All, All);
 
 USMCameraComponent::USMCameraComponent()
@@ -16,31 +14,32 @@ void USMCameraComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	SetOwnerMeshVisibilityEnabled(!IsOnFadeDistance());
+	CheckCameraCollision();
 }
 
-bool USMCameraComponent::IsOnFadeDistance() const
+void USMCameraComponent::CheckCameraCollision()
 {
-	if(!GetWorld() || !GetOwner()) return false;
+	if(!GetWorld()) return;
 
 	const auto StartPoint = GetComponentLocation();
 	const auto Direction = GetForwardVector() * FadeDistance;
 	const auto EndPoint = StartPoint + Direction;
+
 	FHitResult HitResult;
 
 	FCollisionObjectQueryParams CollisionObjectQueryParams;
 	CollisionObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
 
 	GetWorld()->LineTraceSingleByObjectType(HitResult, StartPoint, EndPoint, CollisionObjectQueryParams);
-	if(!HitResult.bBlockingHit) return false;
 
-	return HitResult.GetActor() == GetOwner();
-}
-
-void USMCameraComponent::SetOwnerMeshVisibilityEnabled(const bool Enabled) const
-{
-	const auto Character = GetOwner<ACharacter>();
-	if(!Character || !Character->GetMesh() || Character->GetMesh()->GetVisibleFlag() == Enabled) return;
-
-	Character->GetMesh()->SetVisibility(Enabled, true);
+	if(!HitResult.bBlockingHit && IsOverlaped)
+	{
+		IsOverlaped = false;
+		OnCameraEndOverlap.Broadcast();
+	}
+	else if(HitResult.bBlockingHit && !IsOverlaped)
+	{
+		IsOverlaped = true;
+		OnCameraBeginOverlap.Broadcast(HitResult.GetActor());
+	}
 }
