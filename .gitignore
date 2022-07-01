@@ -1,6 +1,6 @@
 Clean.bat
 
-.plugins/Developer/
+.Plugins/Developer/
 
 # Visual Studio 2015 user specific files
 .vs/
