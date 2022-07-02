@@ -43,4 +43,5 @@ private:
 	bool LineTrace(FHitResult& HitResult) const;
 	bool CanPush(ASMPushableActor* PushableActor) const;
 	bool IsOwnerFalling() const;
+	bool IsOwnerIdle() const;
 };

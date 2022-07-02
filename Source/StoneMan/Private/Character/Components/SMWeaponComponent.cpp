@@ -72,6 +72,36 @@ void USMWeaponComponent::DestroyWeapons()
 
 void USMWeaponComponent::StartAttack(const ESMCharacterElement Element)
 {
-	UE_LOG(LogWeaponComponent, Display, TEXT("WEAPON COMPONENT"))
-	if(Weapons.Contains(Element)) Weapons[Element]->StartAttack();
+	if(!Weapons.Contains(Element) || !Weapons[Element]->CanAttack()) return;
+
+	CurrentWeapon = Weapons[Element];
+	CurrentWeapon->StartAttack();
+	if(!AttackInProgress)
+	{
+		OnStartAttack.Broadcast();
+		AttackInProgress = true;
+	}
+	else if(AttackInProgress && NextComboSection)
+	{
+		OnStartNextComboSection.Broadcast(NextComboSectionName);
+	}
+}
+
+void USMWeaponComponent::StopAttack()
+{
+	AttackInProgress = false;
+	OnEndAttack.Broadcast();
+}
+
+void USMWeaponComponent::SetNextComboSectionEnabled(const bool Enabled, const FName& NextSectionName)
+{
+	NextComboSection = Enabled;
+	NextComboSectionName = NextSectionName;
+}
+
+void USMWeaponComponent::ShowWeapon(const bool Visibility)
+{
+	if(!CurrentWeapon) return;
+	
+	CurrentWeapon->Show(Visibility);
 }

@@ -19,6 +19,7 @@ public class StoneMan : ModuleRules
 			"StoneMan/Public/Weapon/DamageType",
 			"StoneMan/Public/Actors",
 			"StoneMan/Public/Animation",
+			"StoneMan/Public/Animation/Notify",
 			"StoneMan/Public/Character",
 			"StoneMan/Public/Character/AICharacter",
 			"StoneMan/Public/Character/PlayerCharacter",

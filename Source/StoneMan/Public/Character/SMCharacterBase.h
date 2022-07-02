@@ -35,7 +35,17 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Components)
 	USMElementComponent* ElementComponent;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMCharacter)
+	UAnimMontage* AttackAnimMontage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMCharacter)
+	FName StartComboSectionName = "0";
+
 	virtual void OnDeath();
+	void Attack();
+	virtual bool CanAttack() const;
+	virtual void OnStartAttack();
+	virtual void OnEndAttack();
 
 private:
 	UFUNCTION()

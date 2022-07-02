@@ -9,6 +9,10 @@
 
 class ASMWeaponBase;
 
+DECLARE_MULTICAST_DELEGATE(FOnStartAttackSignature);
+DECLARE_MULTICAST_DELEGATE(FOnEndAttackSignature);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnStartNextComboSectionSignature, const FName&);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class STONEMAN_API USMWeaponComponent : public UActorComponent
 {
@@ -17,6 +21,13 @@ class STONEMAN_API USMWeaponComponent : public UActorComponent
 public:
 	USMWeaponComponent();
 	void StartAttack(const ESMCharacterElement Element);
+	void StopAttack();
+	void SetNextComboSectionEnabled(const bool Enabled, const FName& NextSectionName = NAME_None);
+	void ShowWeapon(const bool Visibility);
+
+	FOnStartAttackSignature OnStartAttack;
+	FOnEndAttackSignature OnEndAttack;
+	FOnStartNextComboSectionSignature OnStartNextComboSection;
 
 protected:
 	virtual void BeginPlay() override;
@@ -32,9 +43,18 @@ protected:
 private:
 	TMap<ESMCharacterElement, ASMWeaponBase*> Weapons;
 
+	UPROPERTY()
+	ASMWeaponBase* CurrentWeapon;
+
+	bool AttackInProgress = false;
+	bool NextComboSection = false;
+	
+	FName NextComboSectionName = NAME_None;
+
 	void SpawnWeapons();
-	ASMWeaponBase* SpawnNewWeapon(const TSubclassOf<ASMWeaponBase> NewWeapon);
-	void AttachWeaponToComponent(ASMWeaponBase* Weapon, USceneComponent* AttachTo);
-	const FName& GetSocketName(const ESMCharacterElement Element);
 	void DestroyWeapons();
+	void AttachWeaponToComponent(ASMWeaponBase* Weapon, USceneComponent* AttachTo);
+
+	ASMWeaponBase* SpawnNewWeapon(const TSubclassOf<ASMWeaponBase> NewWeapon);
+	const FName& GetSocketName(const ESMCharacterElement Element);
 };

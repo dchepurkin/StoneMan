@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "SMCoreTypes.h"
+#include "Components/TimelineComponent.h"
 #include "GameFramework/Actor.h"
 #include "SMWeaponBase.generated.h"
 
@@ -17,8 +18,9 @@ class STONEMAN_API ASMWeaponBase : public AActor
 public:
 	ASMWeaponBase();
 	ESMCharacterElement GetElement() const { return Element; }
-	bool CanAttack() const { return CurrentPower > 0; }
+	bool CanAttack() const { return true; }
 	void StartAttack();
+	void Show(const bool Visibility);
 
 protected:
 	virtual void BeginPlay() override;
@@ -26,8 +28,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
 	UStaticMeshComponent* StaticMesh;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMWeapon)
-	UAnimMontage* AttackAnimMontage;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
+	UTimelineComponent* MaterialTimeline;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMWeapon)
 	ESMCharacterElement Element = ESMCharacterElement::Ice;
@@ -44,6 +46,22 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMWeapon, meta=(ClampMin = 1.f))
 	float AttackCoast = 5.f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMWeapon, meta=(ClampMin = 0.1f))
+	float LowPowerAttackFactor = 0.5f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="SMWeapon|Material")
+	UCurveFloat* MaterialTimelineCurve;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="SMWeapon|Material")
+	FName DisolveParameterName = "Dissolve";
+
 private:
 	float CurrentPower = 100.f;
+	FOnTimelineFloat MaterialTimelineDelegate;
+
+	UFUNCTION()
+	void OnMaterialTimeline(const float Alpha);
+
+	UMaterialInstanceDynamic* GetMaterial() const;
+	float GetPowerFactor() const { return CurrentPower >= AttackCoast ? 1.f : LowPowerAttackFactor; }
 };

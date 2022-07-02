@@ -35,6 +35,9 @@ void ASMCharacterBase::BeginPlay()
 
 	OnTakeAnyDamage.AddDynamic(this, &ThisClass::OnDamage);
 	HealthComponent->OnDeath.AddUObject(this, &ThisClass::OnDeath);
+
+	WeaponComponent->OnStartAttack.AddUObject(this, &ThisClass::OnStartAttack);
+	WeaponComponent->OnEndAttack.AddUObject(this, &ThisClass::OnEndAttack);
 }
 
 void ASMCharacterBase::OnDeath()
@@ -44,6 +47,24 @@ void ASMCharacterBase::OnDeath()
 	DestructComponent->Destruct();
 	WeaponComponent->DestroyComponent();
 }
+
+void ASMCharacterBase::Attack()
+{
+	if(CanAttack()) WeaponComponent->StartAttack(ElementComponent->GetElement());
+}
+
+bool ASMCharacterBase::CanAttack() const
+{
+	return !HealthComponent->IsDead() && WeaponComponent && ElementComponent;
+}
+
+void ASMCharacterBase::OnStartAttack()
+{
+	if(!AttackAnimMontage) return;
+	PlayAnimMontage(AttackAnimMontage, 1.f, StartComboSectionName);
+}
+
+void ASMCharacterBase::OnEndAttack() {}
 
 void ASMCharacterBase::OnDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {

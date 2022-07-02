@@ -2,6 +2,7 @@
 
 #include "Character/Components/SMPushComponent.h"
 
+#include "SMPlayerCharacter.h"
 #include "SMPushableActor.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -81,7 +82,7 @@ bool USMPushComponent::LineTrace(FHitResult& HitResult) const
 
 bool USMPushComponent::CanPush(ASMPushableActor* PushableActor) const
 {
-	if(IsOwnerFalling() || !PushableActor) return false;
+	if(!IsOwnerIdle() || IsOwnerFalling() || !PushableActor) return false;
 
 	const auto PushTransform = PushableActor->GetClosestPushTransform(GetOwner());
 	const auto PushForwardVector = PushTransform.GetRotation().GetForwardVector();
@@ -89,9 +90,9 @@ bool USMPushComponent::CanPush(ASMPushableActor* PushableActor) const
 	if(!PushableActor->CanMove(PushForwardVector)) return false;
 
 	const auto OwnerForwardVector = GetOwner()->GetActorForwardVector();
-	
+
 	const auto DotProduct = FVector::DotProduct(PushForwardVector, OwnerForwardVector);
-	if(DotProduct < PushableAngle) return false;	
+	if(DotProduct < PushableAngle) return false;
 
 	FVector OwnerViewPointLocation;
 	FRotator OwnerViewPointRotation;
@@ -112,4 +113,12 @@ bool USMPushComponent::IsOwnerFalling() const
 	if(!MovementComponent) return false;
 
 	return MovementComponent->IsFalling();
+}
+
+bool USMPushComponent::IsOwnerIdle() const
+{
+	const auto Character = GetOwner<ASMPlayerCharacter>();
+	if(!Character) return false;
+
+	return Character->GetState() == ESMPlayerState::Idle;
 }

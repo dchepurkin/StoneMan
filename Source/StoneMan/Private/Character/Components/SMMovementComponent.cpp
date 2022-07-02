@@ -10,3 +10,8 @@ USMMovementComponent::USMMovementComponent()
 	JumpZVelocity = 300.f;
 	MaxAcceleration = 1500.f;
 }
+
+float USMMovementComponent::GetMaxSpeed() const
+{
+	return bSprint ? SprintMaxSpeed : Super::GetMaxSpeed();
+}

@@ -35,21 +35,27 @@ protected:
 	USMPushComponent* PushComponent;
 
 	virtual void OnDeath() override;
+	virtual bool CanAttack() const override;
+	virtual void OnStartAttack() override;
+	virtual void OnEndAttack() override;
 
 private:
 	ESMPlayerState PlayerState = ESMPlayerState::Idle;
 
 	void MoveForward(float AxisValue);
 	void MoveRight(const float AxisValue);
-	void Attack();
 
 	void OnStartPush();
 	void OnStopPush();
+	
 	void OnCameraBeginOverlap(AActor* Actor);
 	void OnCameraEndOverlap();
+	
+	void OnStartNextComboSection(const FName& NextComboSectionName);
 
 	virtual void Jump() override;
 
 	void SetState(const ESMPlayerState NewState) { PlayerState = NewState; }
 	void SetMeshVisibility(const bool Enabled);
+	void SetNextComboSection(const FName& NextComboSectionName) const;
 };

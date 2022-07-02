@@ -50,6 +50,12 @@ void ASMPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Push", IE_Pressed, PushComponent, &USMPushComponent::StartPush);
 	PlayerInputComponent->BindAction("Push", IE_Released, PushComponent, &USMPushComponent::StopPush);
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ThisClass::Attack);
+
+	DECLARE_DELEGATE_OneParam(FOnSprintSignature, const bool);
+	PlayerInputComponent->BindAction<FOnSprintSignature>("Sprint", IE_Pressed, Cast<USMMovementComponent>(GetCharacterMovement()),
+	                                                     &USMMovementComponent::SetSprintEnabled, true);
+	PlayerInputComponent->BindAction<FOnSprintSignature>("Sprint", IE_Released, Cast<USMMovementComponent>(GetCharacterMovement()),
+	                                                     &USMMovementComponent::SetSprintEnabled, false);
 }
 
 void ASMPlayerCharacter::BeginPlay()
@@ -65,6 +71,8 @@ void ASMPlayerCharacter::BeginPlay()
 
 	CameraComponent->OnCameraBeginOverlap.AddUObject(this, &ThisClass::OnCameraBeginOverlap);
 	CameraComponent->OnCameraEndOverlap.AddUObject(this, &ThisClass::OnCameraEndOverlap);
+
+	WeaponComponent->OnStartNextComboSection.AddUObject(this, &ThisClass::OnStartNextComboSection);
 }
 
 void ASMPlayerCharacter::MoveForward(float AxisValue)
@@ -115,6 +123,43 @@ void ASMPlayerCharacter::OnDeath()
 	PushComponent->StopPush();
 }
 
+bool ASMPlayerCharacter::CanAttack() const
+{
+	return (PlayerState == ESMPlayerState::Idle || PlayerState == ESMPlayerState::Attack)
+		&& !GetCharacterMovement()->IsFalling()
+		&& Super::CanAttack();
+}
+
+void ASMPlayerCharacter::OnStartAttack()
+{
+	if(!AttackAnimMontage) return;
+	PlayAnimMontage(AttackAnimMontage);
+	SetState(ESMPlayerState::Attack);
+}
+
+void ASMPlayerCharacter::OnEndAttack()
+{
+	SetState(ESMPlayerState::Idle);
+}
+
+void ASMPlayerCharacter::OnStartNextComboSection(const FName& NextComboSectionName)
+{
+	if(!AttackAnimMontage) return;
+	SetNextComboSection(NextComboSectionName);
+}
+
+void ASMPlayerCharacter::SetNextComboSection(const FName& NextComboSectionName) const
+{
+	if(!GetMesh()) return;
+
+	const auto AnimInstance = GetMesh()->GetAnimInstance();
+	if(!AnimInstance || !AnimInstance->Montage_IsPlaying(AttackAnimMontage)) return;
+
+	const auto CurrentComboSectionName = AnimInstance->Montage_GetCurrentSection();
+	AnimInstance->Montage_SetNextSection(CurrentComboSectionName, NextComboSectionName, AttackAnimMontage);
+	WeaponComponent->SetNextComboSectionEnabled(false);
+}
+
 void ASMPlayerCharacter::OnCameraBeginOverlap(AActor* Actor)
 {
 	SetMeshVisibility(Actor != this);
@@ -129,14 +174,4 @@ void ASMPlayerCharacter::SetMeshVisibility(const bool Enabled)
 {
 	if(!GetMesh()) return;
 	GetMesh()->SetVisibility(Enabled, true);
-}
-
-void ASMPlayerCharacter::Attack()
-{
-	if(PlayerState == ESMPlayerState::Idle &&
-		!HealthComponent->IsDead() &&
-		!GetCharacterMovement()->IsFalling())
-	{
-		WeaponComponent->StartAttack(ElementComponent->GetElement());
-	}
 }

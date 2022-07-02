@@ -13,4 +13,13 @@ class STONEMAN_API USMMovementComponent : public UCharacterMovementComponent
 
 public:
 	USMMovementComponent();
+	virtual float GetMaxSpeed() const override;
+	void SetSprintEnabled(const bool Enabled) { bSprint = Enabled; }
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMMovement)
+	float SprintMaxSpeed = 900.f;
+
+private:
+	bool bSprint = false;
 };
