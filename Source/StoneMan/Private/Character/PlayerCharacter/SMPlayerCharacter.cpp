@@ -50,12 +50,23 @@ void ASMPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Push", IE_Pressed, PushComponent, &USMPushComponent::StartPush);
 	PlayerInputComponent->BindAction("Push", IE_Released, PushComponent, &USMPushComponent::StopPush);
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ThisClass::Attack);
+	PlayerInputComponent->BindAction("Walk", IE_Pressed, Cast<USMMovementComponent>(GetCharacterMovement()), &USMMovementComponent::SwitchWalk);
 
 	DECLARE_DELEGATE_OneParam(FOnSprintSignature, const bool);
 	PlayerInputComponent->BindAction<FOnSprintSignature>("Sprint", IE_Pressed, Cast<USMMovementComponent>(GetCharacterMovement()),
 	                                                     &USMMovementComponent::SetSprintEnabled, true);
 	PlayerInputComponent->BindAction<FOnSprintSignature>("Sprint", IE_Released, Cast<USMMovementComponent>(GetCharacterMovement()),
 	                                                     &USMMovementComponent::SetSprintEnabled, false);
+
+	DECLARE_DELEGATE_OneParam(FOnTryToSetElementSignature, const ESMCharacterElement);
+	PlayerInputComponent->BindAction<FOnTryToSetElementSignature>("ElementIce", IE_Pressed, this, &ASMPlayerCharacter::OnTryToSetElement,
+	                                                              ESMCharacterElement::Ice);
+	PlayerInputComponent->BindAction<FOnTryToSetElementSignature>("ElementFire", IE_Pressed, this, &ASMPlayerCharacter::OnTryToSetElement,
+	                                                              ESMCharacterElement::Fire);
+	PlayerInputComponent->BindAction<FOnTryToSetElementSignature>("ElementAir", IE_Pressed, this, &ASMPlayerCharacter::OnTryToSetElement,
+	                                                              ESMCharacterElement::Air);
+	PlayerInputComponent->BindAction<FOnTryToSetElementSignature>("ElementEarth", IE_Pressed, this, &ASMPlayerCharacter::OnTryToSetElement,
+	                                                              ESMCharacterElement::Earth);
 }
 
 void ASMPlayerCharacter::BeginPlay()
@@ -73,6 +84,8 @@ void ASMPlayerCharacter::BeginPlay()
 	CameraComponent->OnCameraEndOverlap.AddUObject(this, &ThisClass::OnCameraEndOverlap);
 
 	WeaponComponent->OnStartNextComboSection.AddUObject(this, &ThisClass::OnStartNextComboSection);
+
+	ElementComponent->OnChangeElement.AddUObject(this, &ThisClass::OnChangeElement);
 }
 
 void ASMPlayerCharacter::MoveForward(float AxisValue)
@@ -100,7 +113,7 @@ void ASMPlayerCharacter::MoveRight(const float AxisValue)
 void ASMPlayerCharacter::Jump()
 {
 	if(PlayerState == ESMPlayerState::Push) PushComponent->RestartPush();
-	if(HealthComponent->IsFallingVelocityIsDamaged(GetVelocity())) return;
+	if(HealthComponent->IsFallingVelocityIsDamaged(GetVelocity()) || PlayerState == ESMPlayerState::Attack) return;
 	Super::Jump();
 }
 
@@ -111,7 +124,7 @@ void ASMPlayerCharacter::OnStartPush()
 
 void ASMPlayerCharacter::OnStopPush()
 {
-	SetState(ESMPlayerState::Idle);
+	if(PlayerState == ESMPlayerState::Push) SetState(ESMPlayerState::Idle);
 }
 
 void ASMPlayerCharacter::OnDeath()
@@ -174,4 +187,27 @@ void ASMPlayerCharacter::SetMeshVisibility(const bool Enabled)
 {
 	if(!GetMesh()) return;
 	GetMesh()->SetVisibility(Enabled, true);
+}
+
+void ASMPlayerCharacter::OnTryToSetElement(const ESMCharacterElement NewElement)
+{
+	if(NewElement == ElementComponent->GetElement() || PlayerState != ESMPlayerState::Idle || GetCharacterMovement()->IsFalling()) return;
+	SetState(ESMPlayerState::ChangeElement);
+	ElementComponent->SetElement(NewElement);
+}
+
+void ASMPlayerCharacter::OnChangeElement()
+{
+	if(!ChangeElementAnimMontage) return;
+	PlayAnimMontage(ChangeElementAnimMontage);
+}
+
+void ASMPlayerCharacter::ChangeColor()
+{
+	if(!GetMesh()) return;
+
+	const auto Material = ElementComponent->GetMaterial();
+	if(!Material) return;
+
+	GetMesh()->SetMaterial(0, Material);
 }

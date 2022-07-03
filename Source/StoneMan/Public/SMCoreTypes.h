@@ -9,7 +9,8 @@ enum class ESMPlayerState : uint8
 {
 	Idle = 0,
 	Push,
-	Attack
+	Attack,
+	ChangeElement,
 };
 
 UENUM(BlueprintType)

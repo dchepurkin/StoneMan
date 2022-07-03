@@ -48,7 +48,7 @@ private:
 
 	bool AttackInProgress = false;
 	bool NextComboSection = false;
-	
+
 	FName NextComboSectionName = NAME_None;
 
 	void SpawnWeapons();

@@ -10,6 +10,7 @@
 class USpringArmComponent;
 class USMCameraComponent;
 class USMPushComponent;
+class USMStateComponent;
 
 UCLASS()
 class STONEMAN_API ASMPlayerCharacter : public ASMCharacterBase
@@ -19,8 +20,9 @@ class STONEMAN_API ASMPlayerCharacter : public ASMCharacterBase
 public:
 	explicit ASMPlayerCharacter(const FObjectInitializer& ObjectInitializer);
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	void SetState(const ESMPlayerState NewState) { PlayerState = NewState; }
 	ESMPlayerState GetState() const { return PlayerState; }
+	void ChangeColor();
 
 protected:
 	virtual void BeginPlay() override;
@@ -33,6 +35,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
 	USMPushComponent* PushComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMCharacter)
+	UAnimMontage* ChangeElementAnimMontage;
 
 	virtual void OnDeath() override;
 	virtual bool CanAttack() const override;
@@ -47,15 +52,16 @@ private:
 
 	void OnStartPush();
 	void OnStopPush();
-	
+
 	void OnCameraBeginOverlap(AActor* Actor);
 	void OnCameraEndOverlap();
-	
+
 	void OnStartNextComboSection(const FName& NextComboSectionName);
 
 	virtual void Jump() override;
-
-	void SetState(const ESMPlayerState NewState) { PlayerState = NewState; }
+	
 	void SetMeshVisibility(const bool Enabled);
 	void SetNextComboSection(const FName& NextComboSectionName) const;
+	void OnTryToSetElement(const ESMCharacterElement NewElement);
+	void OnChangeElement();
 };

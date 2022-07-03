@@ -12,6 +12,7 @@ USMElementComponent::USMElementComponent()
 void USMElementComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	SetElement(Element);
 }
 
 float USMElementComponent::GetDamageFactor(const UDamageType* DamageType) const
@@ -30,4 +31,5 @@ float USMElementComponent::GetDamageFactor(const UDamageType* DamageType) const
 void USMElementComponent::SetElement(const ESMCharacterElement NewElement)
 {
 	CurrentElement = NewElement;
+	OnChangeElement.Broadcast();
 }

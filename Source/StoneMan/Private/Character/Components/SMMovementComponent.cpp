@@ -13,5 +13,11 @@ USMMovementComponent::USMMovementComponent()
 
 float USMMovementComponent::GetMaxSpeed() const
 {
-	return bSprint ? SprintMaxSpeed : Super::GetMaxSpeed();
+	return bSprint ? SprintMaxSpeed : bWalk ? WalkMaxSpeed : Super::GetMaxSpeed();
+}
+
+void USMMovementComponent::SetSprintEnabled(const bool Enabled)
+{
+	bSprint = Enabled;
+	bWalk = false;
 }
