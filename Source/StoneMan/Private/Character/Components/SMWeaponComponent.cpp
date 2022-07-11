@@ -72,7 +72,7 @@ void USMWeaponComponent::DestroyWeapons()
 
 void USMWeaponComponent::StartAttack(const ESMCharacterElement Element)
 {
-	if(!Weapons.Contains(Element) || !Weapons[Element]->CanAttack()) return;
+	if(!Weapons.Contains(Element)) return;
 
 	CurrentWeapon = Weapons[Element];
 	CurrentWeapon->StartAttack();
@@ -102,6 +102,11 @@ void USMWeaponComponent::SetNextComboSectionEnabled(const bool Enabled, const FN
 void USMWeaponComponent::ShowWeapon(const bool Visibility)
 {
 	if(!CurrentWeapon) return;
-	
+
 	CurrentWeapon->Show(Visibility);
+}
+
+void USMWeaponComponent::MakeDamage() const
+{
+	if(CurrentWeapon) CurrentWeapon->MakeDamage();
 }

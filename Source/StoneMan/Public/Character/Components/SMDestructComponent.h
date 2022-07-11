@@ -28,8 +28,8 @@ class STONEMAN_API USMDestructComponent : public UActorComponent
 public:
 	USMDestructComponent();
 
-	UFUNCTION(BlueprintCallable)
 	void Destruct();
+	void SetMaterial(UMaterialInstance* NewMaterial) { ElementMaterial = NewMaterial; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMDestructComponent)
@@ -45,5 +45,9 @@ protected:
 		{nullptr, "DestructRightUpperLegSocket"},
 		{nullptr, "DestructLeftLowerLegSocket"},
 		{nullptr, "DestructRightLowerLegSocket"},
-	};	
+	};
+
+private:
+	UPROPERTY()
+	UMaterialInstance* ElementMaterial = nullptr;
 };

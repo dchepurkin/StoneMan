@@ -49,6 +49,7 @@ private:
 
 	void MoveForward(float AxisValue);
 	void MoveRight(const float AxisValue);
+	virtual void Jump() override;
 
 	void OnStartPush();
 	void OnStopPush();
@@ -57,11 +58,10 @@ private:
 	void OnCameraEndOverlap();
 
 	void OnStartNextComboSection(const FName& NextComboSectionName);
-
-	virtual void Jump() override;
-	
-	void SetMeshVisibility(const bool Enabled);
 	void SetNextComboSection(const FName& NextComboSectionName) const;
+
+	void SetMeshVisibility(const bool Enabled);
+
 	void OnTryToSetElement(const ESMCharacterElement NewElement);
 	void OnChangeElement();
 };

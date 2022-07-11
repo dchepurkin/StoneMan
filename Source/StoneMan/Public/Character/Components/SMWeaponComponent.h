@@ -24,6 +24,7 @@ public:
 	void StopAttack();
 	void SetNextComboSectionEnabled(const bool Enabled, const FName& NextSectionName = NAME_None);
 	void ShowWeapon(const bool Visibility);
+	void MakeDamage() const;
 
 	FOnStartAttackSignature OnStartAttack;
 	FOnEndAttackSignature OnEndAttack;

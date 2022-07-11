@@ -134,6 +134,7 @@ void ASMPlayerCharacter::OnDeath()
 	if(PlayerContoller) DisableInput(PlayerContoller);
 
 	PushComponent->StopPush();
+	Cast<USMMovementComponent>(GetCharacterMovement())->StopStaminaChange();
 }
 
 bool ASMPlayerCharacter::CanAttack() const

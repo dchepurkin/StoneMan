@@ -17,6 +17,8 @@ void USMDestructComponent::Destruct()
 	const auto Character = GetOwner<ACharacter>();
 	if(!Character) return;
 
+	if(!GetOwner()) return;
+
 	const auto Mesh = Character->GetMesh();
 	if(!Mesh) return;
 
@@ -24,13 +26,18 @@ void USMDestructComponent::Destruct()
 	{
 		if(!DestructMesh) return;
 
-		const auto GeometryComponent = NewObject<UGeometryCollectionComponent>(Character, UGeometryCollectionComponent::StaticClass());
+		const auto GeometryComponent = NewObject<UGeometryCollectionComponent>(this, UGeometryCollectionComponent::StaticClass());
 		if(!GeometryComponent) continue;
 
+		if(ElementMaterial)
+		{
+			GeometryComponent->SetMaterial(0, ElementMaterial);
+			GeometryComponent->SetMaterial(1, ElementMaterial);
+		}
 		GeometryComponent->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
 		GeometryComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 		GeometryComponent->RestCollection = DestructMesh;
-		GeometryComponent->EnableClustering = false;		
+		GeometryComponent->EnableClustering = false;
 		GeometryComponent->RegisterComponent();
 	}
 
