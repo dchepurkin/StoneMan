@@ -53,10 +53,8 @@ void ASMPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Walk", IE_Pressed, Cast<USMMovementComponent>(GetCharacterMovement()), &USMMovementComponent::SwitchWalk);
 
 	DECLARE_DELEGATE_OneParam(FOnSprintSignature, const bool);
-	PlayerInputComponent->BindAction<FOnSprintSignature>("Sprint", IE_Pressed, Cast<USMMovementComponent>(GetCharacterMovement()),
-	                                                     &USMMovementComponent::SetSprintEnabled, true);
-	PlayerInputComponent->BindAction<FOnSprintSignature>("Sprint", IE_Released, Cast<USMMovementComponent>(GetCharacterMovement()),
-	                                                     &USMMovementComponent::SetSprintEnabled, false);
+	PlayerInputComponent->BindAction<FOnSprintSignature>("Sprint", IE_Pressed, this, &ThisClass::SetSprintEnabled, true);
+	PlayerInputComponent->BindAction<FOnSprintSignature>("Sprint", IE_Released, this, &ThisClass::SetSprintEnabled, false);
 
 	DECLARE_DELEGATE_OneParam(FOnTryToSetElementSignature, const ESMCharacterElement);
 	PlayerInputComponent->BindAction<FOnTryToSetElementSignature>("ElementIce", IE_Pressed, this, &ASMPlayerCharacter::OnTryToSetElement,
@@ -117,9 +115,18 @@ void ASMPlayerCharacter::Jump()
 	Super::Jump();
 }
 
+void ASMPlayerCharacter::SetSprintEnabled(const bool Enabled)
+{
+	const auto MovementComponent = Cast<USMMovementComponent>(GetCharacterMovement());
+	if(!MovementComponent) return;
+
+	MovementComponent->SetSprintEnabled(Enabled && PlayerState == ESMPlayerState::Idle);
+}
+
 void ASMPlayerCharacter::OnStartPush()
 {
 	SetState(ESMPlayerState::Push);
+	SetSprintEnabled(false);
 }
 
 void ASMPlayerCharacter::OnStopPush()
@@ -149,6 +156,7 @@ void ASMPlayerCharacter::OnStartAttack()
 	if(!AttackAnimMontage) return;
 	PlayAnimMontage(AttackAnimMontage);
 	SetState(ESMPlayerState::Attack);
+	SetSprintEnabled(false);
 }
 
 void ASMPlayerCharacter::OnEndAttack()

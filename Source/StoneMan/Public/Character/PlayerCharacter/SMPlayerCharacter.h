@@ -50,6 +50,7 @@ private:
 	void MoveForward(float AxisValue);
 	void MoveRight(const float AxisValue);
 	virtual void Jump() override;
+	void SetSprintEnabled(const bool Enabled);
 
 	void OnStartPush();
 	void OnStopPush();
