@@ -100,8 +100,8 @@ bool ASMSwitchPlane::LineTrace(const float X1, const float Y1, const float X2, c
 
 void ASMSwitchPlane::SetSwitchEnabled(const bool Enabled)
 {
-	bSwitched = Enabled;
+	Super::SetSwitchEnabled(Enabled);
+	
 	const auto Offset = FVector(0.f, 0.f, SwitchedZOffset);
-	StaticMesh->AddLocalOffset(bSwitched ? -Offset : Offset);
-	OnChangeSwitchEnabled.Broadcast(this, bSwitched);
+	StaticMesh->AddLocalOffset(Enabled ? -Offset : Offset);	
 }

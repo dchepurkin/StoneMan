@@ -3,21 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "SMSwitchBase.h"
 #include "SMSwitchPlane.generated.h"
 
 class UBoxComponent;
 
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnChangeSwitchEnabledSignature, AActor*, const bool);
-
-UCLASS()
-class STONEMAN_API ASMSwitchPlane : public AActor
+UCLASS(Blueprintable)
+class STONEMAN_API ASMSwitchPlane : public ASMSwitchBase
 {
 	GENERATED_BODY()
 
 public:
-	FOnChangeSwitchEnabledSignature OnChangeSwitchEnabled;
-	
 	ASMSwitchPlane();
 	virtual void Tick(float DeltaSeconds) override;
 
@@ -42,9 +38,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="SMSwitch|Debug", meta=(EditCondition=bDrawDebugLines))
 	FColor DebugColor = FColor::Green;
 
-private:
-	bool bSwitched = false;
+	virtual void SetSwitchEnabled(const bool Enabled) override;
 
+private:
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
 	                    const FHitResult& SweepResult);
@@ -53,7 +49,5 @@ private:
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	bool SwitchCheck() const;
-	bool LineTrace(const float X1, const float Y1, const float X2, const float Y2) const;
-
-	void SetSwitchEnabled(const bool Enabled);
+	bool LineTrace(const float X1, const float Y1, const float X2, const float Y2) const;	
 };
