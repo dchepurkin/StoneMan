@@ -17,7 +17,7 @@ class STONEMAN_API ASMWeaponBase : public AActor
 
 public:
 	ASMWeaponBase();
-	ESMCharacterElement GetElement() const { return Element; }
+	ESMElement GetElement() const { return Element; }
 	void StartAttack();
 	void Show(const bool Visibility) const;
 	void RestorePower(const float PowerAmount);
@@ -33,7 +33,7 @@ protected:
 	UTimelineComponent* MaterialTimeline;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMWeapon)
-	ESMCharacterElement Element = ESMCharacterElement::Ice;
+	ESMElement Element = ESMElement::Ice;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMWeapon)
 	TSubclassOf<USMDamageTypeBase> DamageType;

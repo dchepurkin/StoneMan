@@ -20,7 +20,7 @@ class STONEMAN_API USMWeaponComponent : public UActorComponent
 
 public:
 	USMWeaponComponent();
-	void StartAttack(const ESMCharacterElement Element);
+	void StartAttack(const ESMElement Element);
 	void StopAttack();
 	void SetNextComboSectionEnabled(const bool Enabled, const FName& NextSectionName = NAME_None);
 	void ShowWeapon(const bool Visibility);
@@ -35,14 +35,14 @@ protected:
 	virtual void OnComponentDestroyed(bool bDestroyingHierarchy) override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMWeaponComponent, DisplayName="Weapons")
-	TMap<ESMCharacterElement, FWeaponData> WeaponsData{
-		{ESMCharacterElement::Ice, FWeaponData()},
-		{ESMCharacterElement::Fire, FWeaponData()},
-		{ESMCharacterElement::Earth, FWeaponData()},
-		{ESMCharacterElement::Air, FWeaponData()}
+	TMap<ESMElement, FWeaponData> WeaponsData{
+		{ESMElement::Ice, FWeaponData()},
+		{ESMElement::Fire, FWeaponData()},
+		{ESMElement::Earth, FWeaponData()},
+		{ESMElement::Air, FWeaponData()}
 	};
 private:
-	TMap<ESMCharacterElement, ASMWeaponBase*> Weapons;
+	TMap<ESMElement, ASMWeaponBase*> Weapons;
 
 	UPROPERTY()
 	ASMWeaponBase* CurrentWeapon;
@@ -57,5 +57,5 @@ private:
 	void AttachWeaponToComponent(ASMWeaponBase* Weapon, USceneComponent* AttachTo);
 
 	ASMWeaponBase* SpawnNewWeapon(const TSubclassOf<ASMWeaponBase> NewWeapon);
-	const FName& GetSocketName(const ESMCharacterElement Element);
+	const FName& GetSocketName(const ESMElement Element);
 };

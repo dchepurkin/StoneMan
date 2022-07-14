@@ -10,7 +10,7 @@ class UGeometryCollectionComponent;
 class USMDestructComponent;
 class USMHealthComponent;
 class USMWeaponComponent;
-class USMElementComponent;
+class USMCharacterElementComponent;
 
 UCLASS(Abstract)
 class STONEMAN_API ASMCharacterBase : public ACharacter
@@ -33,7 +33,7 @@ protected:
 	USMWeaponComponent* WeaponComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Components)
-	USMElementComponent* ElementComponent;
+	USMCharacterElementComponent* ElementComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMCharacter)
 	UAnimMontage* AttackAnimMontage;

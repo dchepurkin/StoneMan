@@ -14,14 +14,14 @@ class STONEMAN_API USMDamageTypeBase : public UDamageType
 
 public:
 	UFUNCTION(BlueprintCallable)
-	float GetElementDamage(const ESMCharacterElement Element) { return ElementDamage[Element]; }
+	float GetElementDamage(const ESMElement Element) { return ElementDamage[Element]; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMDamageType)
-	TMap<ESMCharacterElement, float> ElementDamage{
-		{ESMCharacterElement::Ice, 1.f},
-		{ESMCharacterElement::Fire, 1.f},
-		{ESMCharacterElement::Earth, 1.f},
-		{ESMCharacterElement::Air, 1.f},
+	TMap<ESMElement, float> ElementDamage{
+		{ESMElement::Ice, 1.f},
+		{ESMElement::Fire, 1.f},
+		{ESMElement::Earth, 1.f},
+		{ESMElement::Air, 1.f},
 	};
 };

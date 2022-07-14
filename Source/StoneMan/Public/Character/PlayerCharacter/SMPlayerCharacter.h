@@ -63,6 +63,6 @@ private:
 
 	void SetMeshVisibility(const bool Enabled);
 
-	void OnTryToSetElement(const ESMCharacterElement NewElement);
+	void OnTryToSetElement(const ESMElement NewElement);
 	void OnChangeElement();
 };

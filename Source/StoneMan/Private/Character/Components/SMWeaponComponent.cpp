@@ -57,7 +57,7 @@ void USMWeaponComponent::AttachWeaponToComponent(ASMWeaponBase* Weapon, USceneCo
 	Weapon->AttachToComponent(AttachTo, {EAttachmentRule::SnapToTarget, true}, GetSocketName(Element));
 }
 
-const FName& USMWeaponComponent::GetSocketName(const ESMCharacterElement Element)
+const FName& USMWeaponComponent::GetSocketName(const ESMElement Element)
 {
 	return WeaponsData[Element].SocketName;
 }
@@ -70,7 +70,7 @@ void USMWeaponComponent::DestroyWeapons()
 	}
 }
 
-void USMWeaponComponent::StartAttack(const ESMCharacterElement Element)
+void USMWeaponComponent::StartAttack(const ESMElement Element)
 {
 	if(!Weapons.Contains(Element)) return;
 

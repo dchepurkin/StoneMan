@@ -2,9 +2,9 @@
 
 #include "SMCharacterBase.h"
 
+#include "SMCharacterElementComponent.h"
 #include "SMDamageTypeBase.h"
 #include "SMDestructComponent.h"
-#include "SMElementComponent.h"
 #include "SMHealthComponent.h"
 #include "SMWeaponComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -19,7 +19,7 @@ ASMCharacterBase::ASMCharacterBase(const FObjectInitializer& ObjectInitializer)
 	DestructComponent = CreateDefaultSubobject<USMDestructComponent>("DestructComponent");
 	HealthComponent = CreateDefaultSubobject<USMHealthComponent>("HealthComponent");
 	WeaponComponent = CreateDefaultSubobject<USMWeaponComponent>("WeaponComponent");
-	ElementComponent = CreateDefaultSubobject<USMElementComponent>("ElementComponent");
+	ElementComponent = CreateDefaultSubobject<USMCharacterElementComponent>("ElementComponent");
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Destructible, ECR_Ignore);
 }

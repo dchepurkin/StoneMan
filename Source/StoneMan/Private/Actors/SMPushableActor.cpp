@@ -1,7 +1,6 @@
 // Created by DChepurkin
 
 #include "Actors/SMPushableActor.h"
-
 #include "Components/BoxComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -34,12 +33,16 @@ ASMPushableActor::ASMPushableActor()
 	YEndAxisCollision->SetupAttachment(GetRootComponent());
 	YEndAxisCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
 	YEndAxisCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+
+	ElementComponent = CreateDefaultSubobject<USMElementComponent>("ElementComponent");
 }
 
 void ASMPushableActor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	check(ElementComponent);
+	
 	XAxisCollision->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnAxisCollisionBeginOverlap);
 	YAxisCollision->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnAxisCollisionBeginOverlap);
 
@@ -88,6 +91,13 @@ void ASMPushableActor::Tick(float DeltaTime)
 	{
 		if(const auto PushComponent = GetPushComponent(PushingActor)) PushComponent->RestartPush();
 	}
+}
+
+void ASMPushableActor::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	StaticMesh->SetMaterial(0, ElementComponent->GetMaterial());
 }
 
 const FTransform& ASMPushableActor::GetClosestPushTransform(const AActor* Actor)

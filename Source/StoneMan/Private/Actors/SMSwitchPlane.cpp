@@ -2,6 +2,8 @@
 
 #include "Actors/SMSwitchPlane.h"
 
+#include "SMElementComponent.h"
+#include "SMElementInterface.h"
 #include "Components/BoxComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSwitchPlane, All, All);
@@ -23,6 +25,8 @@ ASMSwitchPlane::ASMSwitchPlane()
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>("BoxCollision");
 	BoxCollision->SetCollisionResponseToAllChannels(ECR_Overlap);
 	BoxCollision->SetupAttachment(GetRootComponent());
+
+	ElementComponent = CreateDefaultSubobject<USMElementComponent>("ElementComponent");
 }
 
 void ASMSwitchPlane::Tick(float DeltaSeconds)
@@ -36,12 +40,20 @@ void ASMSwitchPlane::Tick(float DeltaSeconds)
 	}
 }
 
+void ASMSwitchPlane::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	StaticMesh->SetMaterial(0, ElementComponent->GetMaterial());
+}
+
 void ASMSwitchPlane::BeginPlay()
 {
 	Super::BeginPlay();
 
 	check(StaticMesh);
 	check(BoxCollision);
+	check(ElementComponent);
 
 	BoxCollision->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnBeginOverlap);
 	BoxCollision->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnEndOverlap);
@@ -50,7 +62,7 @@ void ASMSwitchPlane::BeginPlay()
 void ASMSwitchPlane::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
                                     bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(!bSwitched) SetActorTickEnabled(true);
+	if(!bSwitched && CheckElement(OtherActor)) SetActorTickEnabled(true);
 }
 
 void ASMSwitchPlane::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -58,7 +70,7 @@ void ASMSwitchPlane::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 	TArray<AActor*> OverlapedActors;
 	BoxCollision->GetOverlappingActors(OverlapedActors);
 
-	if(!OverlapedActors.IsEmpty()) return;
+	if(OverlapedActors.FindByPredicate([this](AActor* Actor) { return CheckElement(Actor); })) return;
 
 	if(bSwitched) SetSwitchEnabled(false);
 	SetActorTickEnabled(false);
@@ -100,8 +112,16 @@ bool ASMSwitchPlane::LineTrace(const float X1, const float Y1, const float X2, c
 
 void ASMSwitchPlane::SetSwitchEnabled(const bool Enabled)
 {
-	Super::SetSwitchEnabled(Enabled);
-	
 	const auto Offset = FVector(0.f, 0.f, SwitchedZOffset);
-	StaticMesh->AddLocalOffset(Enabled ? -Offset : Offset);	
+	StaticMesh->AddLocalOffset(Enabled ? -Offset : Offset);
+
+	Super::SetSwitchEnabled(Enabled);
+}
+
+bool ASMSwitchPlane::CheckElement(AActor* Actor) const
+{
+	if(ElementComponent->GetElement() == ESMElement::NoElement) return true;
+	if(!Actor || !Actor->Implements<USMElementInterface>()) return false;
+
+	return Cast<ISMElementInterface>(Actor)->GetElement() == ElementComponent->GetElement();
 }

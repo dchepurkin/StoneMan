@@ -14,12 +14,13 @@ enum class ESMPlayerState : uint8
 };
 
 UENUM(BlueprintType)
-enum class ESMCharacterElement : uint8
+enum class ESMElement : uint8
 {
 	Ice = 0,
 	Fire,
 	Air,
 	Earth,
+	NoElement
 };
 
 USTRUCT(BlueprintType)

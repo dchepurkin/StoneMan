@@ -7,6 +7,7 @@
 #include "SMSwitchPlane.generated.h"
 
 class UBoxComponent;
+class USMElementComponent;
 
 UCLASS(Blueprintable)
 class STONEMAN_API ASMSwitchPlane : public ASMSwitchBase
@@ -16,9 +17,13 @@ class STONEMAN_API ASMSwitchPlane : public ASMSwitchBase
 public:
 	ASMSwitchPlane();
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void OnConstruction(const FTransform& Transform) override;
 
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Component)
+	USMElementComponent* ElementComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Component)
 	UStaticMeshComponent* StaticMesh;
@@ -49,5 +54,6 @@ private:
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	bool SwitchCheck() const;
-	bool LineTrace(const float X1, const float Y1, const float X2, const float Y2) const;	
+	bool LineTrace(const float X1, const float Y1, const float X2, const float Y2) const;
+	bool CheckElement(AActor* Actor) const;
 };

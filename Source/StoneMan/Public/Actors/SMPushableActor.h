@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SMElementComponent.h"
+#include "SMElementInterface.h"
 #include "SMPushComponent.h"
 #include "GameFramework/Actor.h"
 #include "SMPushableActor.generated.h"
@@ -10,13 +12,14 @@
 class UBoxComponent;
 
 UCLASS()
-class STONEMAN_API ASMPushableActor : public AActor
+class STONEMAN_API ASMPushableActor : public AActor, public ISMElementInterface
 {
 	GENERATED_BODY()
 
 public:
 	ASMPushableActor();
 	virtual void Tick(float DeltaTime) override;
+	virtual void OnConstruction(const FTransform& Transform) override;
 
 	const FTransform& GetClosestPushTransform(const AActor* Actor);
 	bool CanMove(const FVector& MoveDirection);
@@ -24,8 +27,13 @@ public:
 	void StartMoving(const FVector& NewPushVector);
 	void StopMoving();
 
+	virtual ESMElement GetElement() override { return ElementComponent->GetElement(); };
+
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMPushableActor)
+	USMElementComponent* ElementComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMPushableActor)
 	UStaticMeshComponent* StaticMesh;

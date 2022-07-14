@@ -4,7 +4,7 @@
 #include "SMHealthComponent.h"
 #include "SMPushComponent.h"
 #include "SMCameraComponent.h"
-#include "SMElementComponent.h"
+#include "SMCharacterElementComponent.h"
 #include "SMWeaponComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SMMovementComponent.h"
@@ -56,15 +56,15 @@ void ASMPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction<FOnSprintSignature>("Sprint", IE_Pressed, this, &ThisClass::SetSprintEnabled, true);
 	PlayerInputComponent->BindAction<FOnSprintSignature>("Sprint", IE_Released, this, &ThisClass::SetSprintEnabled, false);
 
-	DECLARE_DELEGATE_OneParam(FOnTryToSetElementSignature, const ESMCharacterElement);
+	DECLARE_DELEGATE_OneParam(FOnTryToSetElementSignature, const ESMElement);
 	PlayerInputComponent->BindAction<FOnTryToSetElementSignature>("ElementIce", IE_Pressed, this, &ASMPlayerCharacter::OnTryToSetElement,
-	                                                              ESMCharacterElement::Ice);
+	                                                              ESMElement::Ice);
 	PlayerInputComponent->BindAction<FOnTryToSetElementSignature>("ElementFire", IE_Pressed, this, &ASMPlayerCharacter::OnTryToSetElement,
-	                                                              ESMCharacterElement::Fire);
+	                                                              ESMElement::Fire);
 	PlayerInputComponent->BindAction<FOnTryToSetElementSignature>("ElementAir", IE_Pressed, this, &ASMPlayerCharacter::OnTryToSetElement,
-	                                                              ESMCharacterElement::Air);
+	                                                              ESMElement::Air);
 	PlayerInputComponent->BindAction<FOnTryToSetElementSignature>("ElementEarth", IE_Pressed, this, &ASMPlayerCharacter::OnTryToSetElement,
-	                                                              ESMCharacterElement::Earth);
+	                                                              ESMElement::Earth);
 }
 
 void ASMPlayerCharacter::BeginPlay()
@@ -198,7 +198,7 @@ void ASMPlayerCharacter::SetMeshVisibility(const bool Enabled)
 	GetMesh()->SetVisibility(Enabled, true);
 }
 
-void ASMPlayerCharacter::OnTryToSetElement(const ESMCharacterElement NewElement)
+void ASMPlayerCharacter::OnTryToSetElement(const ESMElement NewElement)
 {
 	if(NewElement == ElementComponent->GetElement() || PlayerState != ESMPlayerState::Idle || GetCharacterMovement()->IsFalling()) return;
 	SetState(ESMPlayerState::ChangeElement);
