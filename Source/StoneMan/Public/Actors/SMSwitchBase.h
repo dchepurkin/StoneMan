@@ -21,12 +21,12 @@ public:
 	ASMSwitchBase();
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMSwitch)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="SMSwitch|Sounds")
 	USoundCue* SwitchONSound;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMSwitch)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="SMSwitch|Sounds")
 	USoundCue* SwitchOFFSound;
-	
+
 	bool bSwitched = false;
 	virtual void BeginPlay() override;
 	virtual void SetSwitchEnabled(const bool Enabled);

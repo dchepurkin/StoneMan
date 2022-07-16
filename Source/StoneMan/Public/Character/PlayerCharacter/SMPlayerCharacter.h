@@ -7,6 +7,7 @@
 #include "Character/SMCharacterBase.h"
 #include "SMPlayerCharacter.generated.h"
 
+class USMInteractionComponent;
 class USpringArmComponent;
 class USMCameraComponent;
 class USMPushComponent;
@@ -26,6 +27,9 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
+	USMInteractionComponent* InteractionComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
 	USpringArmComponent* SpringArmComponent;
@@ -65,4 +69,6 @@ private:
 
 	void OnTryToSetElement(const ESMElement NewElement);
 	void OnChangeElement();
+
+	void OnInteraction();
 };

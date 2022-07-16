@@ -5,7 +5,9 @@
 #include "SMPushComponent.h"
 #include "SMCameraComponent.h"
 #include "SMCharacterElementComponent.h"
+#include "SMInteractionComponent.h"
 #include "SMWeaponComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SMMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -35,6 +37,9 @@ ASMPlayerCharacter::ASMPlayerCharacter(const FObjectInitializer& ObjectInitializ
 	CameraComponent->SetupAttachment(SpringArmComponent);
 
 	PushComponent = CreateDefaultSubobject<USMPushComponent>("PushComponent");
+
+	InteractionComponent = CreateDefaultSubobject<USMInteractionComponent>("InteractionComponent");
+	InteractionComponent->SetupAttachment(GetRootComponent());
 }
 
 void ASMPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -51,6 +56,7 @@ void ASMPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Push", IE_Released, PushComponent, &USMPushComponent::StopPush);
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ThisClass::Attack);
 	PlayerInputComponent->BindAction("Walk", IE_Pressed, Cast<USMMovementComponent>(GetCharacterMovement()), &USMMovementComponent::SwitchWalk);
+	PlayerInputComponent->BindAction("Interaction", IE_Pressed, this, &ThisClass::OnInteraction);
 
 	DECLARE_DELEGATE_OneParam(FOnSprintSignature, const bool);
 	PlayerInputComponent->BindAction<FOnSprintSignature>("Sprint", IE_Pressed, this, &ThisClass::SetSprintEnabled, true);
@@ -71,9 +77,10 @@ void ASMPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	check(PushComponent)
-	check(SpringArmComponent)
-	check(CameraComponent)
+	check(PushComponent);
+	check(SpringArmComponent);
+	check(CameraComponent);
+	check(InteractionComponent);
 
 	PushComponent->OnStartPush.AddUObject(this, &ThisClass::OnStartPush);
 	PushComponent->OnStopPush.AddUObject(this, &ThisClass::OnStopPush);
@@ -209,6 +216,12 @@ void ASMPlayerCharacter::OnChangeElement()
 {
 	if(!ChangeElementAnimMontage) return;
 	PlayAnimMontage(ChangeElementAnimMontage);
+}
+
+void ASMPlayerCharacter::OnInteraction()
+{
+	if(PlayerState != ESMPlayerState::Idle || GetCharacterMovement()->IsFalling()) return;
+	InteractionComponent->Interact();
 }
 
 void ASMPlayerCharacter::ChangeColor()
