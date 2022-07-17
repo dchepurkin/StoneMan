@@ -19,4 +19,5 @@ class STONEMAN_API ISMInteractionInterface
 public:
 	virtual void Interact(AActor* WhoInteract) = 0;
 	virtual FString GetInteractionMessage() const = 0;
+	virtual void SetOutlineVisible(const bool Visible) = 0;
 };

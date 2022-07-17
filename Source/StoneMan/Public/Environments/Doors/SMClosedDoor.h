@@ -25,8 +25,6 @@ struct FSwitches
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, DisplayName = "Open On Switch(ON/OFF)")
 	EOpenOn OpenOn;
-
-	bool SwitchIsOpen = false;
 };
 
 UCLASS(Blueprintable)
@@ -47,9 +45,9 @@ protected:
 private:
 	FVector ClosePosition = FVector::ZeroVector;
 	FVector OpenPosition = FVector::ZeroVector;
-	
+
 	void BindSwitchesesDelegates();
-	void OnChangeSwitchEnabled(AActor* Switch, const bool Enabled);
+	void OnChangeSwitch();
 	virtual void OnOpenCloseDoor(const float Alpha) override;
 
 	bool CheckForOpen();

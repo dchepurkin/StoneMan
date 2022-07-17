@@ -7,7 +7,6 @@
 #include "SMCharacterElementComponent.h"
 #include "SMInteractionComponent.h"
 #include "SMWeaponComponent.h"
-#include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SMMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -32,6 +31,7 @@ ASMPlayerCharacter::ASMPlayerCharacter(const FObjectInitializer& ObjectInitializ
 	SpringArmComponent->CameraLagSpeed = 8.f;
 	SpringArmComponent->CameraRotationLagSpeed = 8.f;
 	SpringArmComponent->CameraLagMaxDistance = 20.f;
+	SpringArmComponent->SocketOffset = FVector(0.f, 0.f, 100.f);
 
 	CameraComponent = CreateDefaultSubobject<USMCameraComponent>("CameraComponent");
 	CameraComponent->SetupAttachment(SpringArmComponent);
@@ -55,7 +55,6 @@ void ASMPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Push", IE_Pressed, PushComponent, &USMPushComponent::StartPush);
 	PlayerInputComponent->BindAction("Push", IE_Released, PushComponent, &USMPushComponent::StopPush);
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ThisClass::Attack);
-	PlayerInputComponent->BindAction("Walk", IE_Pressed, Cast<USMMovementComponent>(GetCharacterMovement()), &USMMovementComponent::SwitchWalk);
 	PlayerInputComponent->BindAction("Interaction", IE_Pressed, this, &ThisClass::OnInteraction);
 
 	DECLARE_DELEGATE_OneParam(FOnSprintSignature, const bool);
@@ -91,6 +90,7 @@ void ASMPlayerCharacter::BeginPlay()
 	WeaponComponent->OnStartNextComboSection.AddUObject(this, &ThisClass::OnStartNextComboSection);
 
 	ElementComponent->OnChangeElement.AddUObject(this, &ThisClass::OnChangeElement);
+	ChangeColor();
 }
 
 void ASMPlayerCharacter::MoveForward(float AxisValue)

@@ -22,21 +22,15 @@ void USMMovementComponent::BeginPlay()
 
 float USMMovementComponent::GetMaxSpeed() const
 {
-	return bSprint ? SprintMaxSpeed : bWalk ? WalkMaxSpeed : CanRun() ? Super::GetMaxSpeed() : WalkMaxSpeed;
+	return bSprint ? SprintMaxSpeed : Super::GetMaxSpeed();
 }
 
 void USMMovementComponent::SetSprintEnabled(const bool Enabled)
 {
 	bSprint = Enabled && CanSprint();
-	bWalk = false;
 
 	SetStaminaUseTimerEnabled(bSprint);
 	SetStaminaRestoreTimerEnabled(!bSprint);
-}
-
-void USMMovementComponent::SwitchWalk()
-{
-	bWalk = !bWalk;
 }
 
 void USMMovementComponent::StopStaminaChange()
@@ -57,24 +51,32 @@ void USMMovementComponent::OnRestoreStamina()
 	if(FMath::IsNearlyEqual(CurrentStamina, MaxStamina)) SetStaminaRestoreTimerEnabled(false);
 }
 
-void USMMovementComponent::OnUseStamina()
+void USMMovementComponent::OnSprint()
 {
-	SetStamina(CurrentStamina - SprintCoast);
-	if(FMath::IsNearlyZero(CurrentStamina)) SetSprintEnabled(false);
+	if(FMath::IsNearlyZero(Velocity.Length()))
+	{
+		SetStaminaRestoreTimerEnabled(true);
+	}
+	else
+	{
+		SetStaminaRestoreTimerEnabled(false);
+		SetStamina(CurrentStamina - SprintCoast);
+		if(FMath::IsNearlyZero(CurrentStamina)) SetSprintEnabled(false);
+	}
 }
 
-void USMMovementComponent::SetStaminaUseTimerEnabled(const float Enabled)
+void USMMovementComponent::SetStaminaUseTimerEnabled(const bool Enabled)
 {
 	if(!GetWorld()) return;
 
 	Enabled
-		? GetWorld()->GetTimerManager().SetTimer(StaminaUseTimerHandle, this, &ThisClass::OnUseStamina, StaminaUseRate, true)
+		? GetWorld()->GetTimerManager().SetTimer(StaminaUseTimerHandle, this, &ThisClass::OnSprint, StaminaUseRate, true)
 		: GetWorld()->GetTimerManager().ClearTimer(StaminaUseTimerHandle);
 }
 
-void USMMovementComponent::SetStaminaRestoreTimerEnabled(const float Enabled)
+void USMMovementComponent::SetStaminaRestoreTimerEnabled(const bool Enabled)
 {
-	if(!GetWorld()) return;
+	if(!GetWorld() || GetWorld()->GetTimerManager().IsTimerActive(StaminaRestoreTimerHandle) == Enabled) return;
 
 	Enabled
 		? GetWorld()->GetTimerManager().SetTimer(StaminaRestoreTimerHandle, this, &ThisClass::OnRestoreStamina, StaminaRestoreRate, true, StaminaRestoreDelay)

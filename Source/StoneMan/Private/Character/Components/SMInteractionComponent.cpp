@@ -40,27 +40,16 @@ void USMInteractionComponent::OnBeginOverlap(UPrimitiveComponent* OverlappedComp
                                              bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(!OtherActor || !OtherActor->Implements<USMInteractionInterface>()) return;
-	AddInteractionActor(OtherActor);
+	if(CurrentInteractionActor) Cast<ISMInteractionInterface>(CurrentInteractionActor)->SetOutlineVisible(false);
+	CurrentInteractionActor = OtherActor;
+	Cast<ISMInteractionInterface>(CurrentInteractionActor)->SetOutlineVisible(true);
 }
 
 void USMInteractionComponent::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                                            int32 OtherBodyIndex)
 {
-	if(!OtherActor || !OtherActor->Implements<USMInteractionInterface>()) return;
-	RemoveInteractionActor(OtherActor);
-}
-
-void USMInteractionComponent::AddInteractionActor(AActor* Actor)
-{
-	if(IneractionActors.Contains(Actor)) return;
-	IneractionActors.Add(Actor);
-	CurrentInteractionActor = Actor;
-}
-
-void USMInteractionComponent::RemoveInteractionActor(AActor* Actor)
-{
-	if(!IneractionActors.Contains(Actor)) return;
-	IneractionActors.Remove(Actor);
-
+	if(!OtherActor || CurrentInteractionActor != OtherActor || !OtherActor->Implements<USMInteractionInterface>()) return;
+	
+	Cast<ISMInteractionInterface>(CurrentInteractionActor)->SetOutlineVisible(false);
 	CurrentInteractionActor = nullptr;
 }

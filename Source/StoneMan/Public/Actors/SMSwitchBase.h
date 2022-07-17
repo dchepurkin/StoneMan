@@ -8,7 +8,7 @@
 
 class USoundCue;
 
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnChangeSwitchEnabledSignature, AActor*, const bool);
+DECLARE_MULTICAST_DELEGATE(FOnChangeSwitchEnabledSignature);
 
 UCLASS(Abstract, NotBlueprintable)
 class STONEMAN_API ASMSwitchBase : public AActor
@@ -19,6 +19,7 @@ public:
 	FOnChangeSwitchEnabledSignature OnChangeSwitchEnabled;
 
 	ASMSwitchBase();
+	bool IsEnabled() const { return bSwitched; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="SMSwitch|Sounds")

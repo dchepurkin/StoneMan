@@ -18,7 +18,7 @@ void ASMSwitchBase::BeginPlay()
 void ASMSwitchBase::SetSwitchEnabled(const bool Enabled)
 {
 	bSwitched = Enabled;	
-	OnChangeSwitchEnabled.Broadcast(this, bSwitched);
+	OnChangeSwitchEnabled.Broadcast();
 
 	UGameplayStatics::PlaySoundAtLocation(this, bSwitched ? SwitchONSound : SwitchOFFSound, GetActorLocation());
 }

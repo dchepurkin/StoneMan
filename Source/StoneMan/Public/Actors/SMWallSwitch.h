@@ -16,6 +16,7 @@ public:
 	ASMWallSwitch();
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void Interact(AActor* WhoInteract) override;
+	virtual void SetOutlineVisible(const bool Visible) override;
 
 	UFUNCTION(BlueprintCallable)
 	virtual FString GetInteractionMessage() const override { return bSwitched ? InteractionMessageOFF : InteractionMessageON; }
@@ -68,7 +69,6 @@ private:
 	UFUNCTION()
 	void OnSwitchTimelineFinishedCallback();
 
-	void SetLightColor(const bool Enabled) const;
+	void SetLightColor(const FLinearColor& NewColor) const;
 	void SetSwitchRotation(const FRotator& NewRotation) const;
-	void CalculateRotation();
 };

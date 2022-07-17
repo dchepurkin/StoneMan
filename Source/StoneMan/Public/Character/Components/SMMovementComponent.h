@@ -18,10 +18,9 @@ public:
 
 	USMMovementComponent();
 	virtual void BeginPlay() override;
-	
+
 	virtual float GetMaxSpeed() const override;
 	void SetSprintEnabled(const bool Enabled);
-	void SwitchWalk();
 	void StopStaminaChange();
 
 	UFUNCTION(BlueprintCallable)
@@ -33,9 +32,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMMovement)
 	float SprintMaxSpeed = 900.f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMMovement, meta=(ClampMin = 0.f))
-	float WalkMinStamina = 20.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMMovement, meta=(ClampMin = 0.1f))
 	float MaxStamina = 100.f;
@@ -57,18 +53,16 @@ protected:
 
 private:
 	bool bSprint = false;
-	bool bWalk = false;
 	float CurrentStamina;
 	FTimerHandle StaminaRestoreTimerHandle;
 	FTimerHandle StaminaUseTimerHandle;
 
-	void SetStaminaUseTimerEnabled(const float Enabled);
-	void SetStaminaRestoreTimerEnabled(const float Enabled);
+	void SetStaminaUseTimerEnabled(const bool Enabled);
+	void SetStaminaRestoreTimerEnabled(const bool Enabled);
 
 	void SetStamina(const float NewStamina);
 	void OnRestoreStamina();
-	void OnUseStamina();
+	void OnSprint();
 
 	bool CanSprint() const { return CurrentStamina >= SprintCoast; }
-	bool CanRun() const { return CurrentStamina >= WalkMinStamina; }
 };

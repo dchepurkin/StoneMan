@@ -25,9 +25,6 @@ protected:
 
 private:
 	UPROPERTY()
-	TArray<AActor*> IneractionActors;
-
-	UPROPERTY()
 	AActor* CurrentInteractionActor;
 
 	UFUNCTION()
@@ -36,7 +33,4 @@ private:
 
 	UFUNCTION()
 	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	void AddInteractionActor(AActor* Actor);
-	void RemoveInteractionActor(AActor* Actor);
 };

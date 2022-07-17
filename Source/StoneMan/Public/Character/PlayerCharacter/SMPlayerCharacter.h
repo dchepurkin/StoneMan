@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SMCharacterElementComponent.h"
 #include "SMCoreTypes.h"
+#include "SMElementInterface.h"
 #include "Character/SMCharacterBase.h"
 #include "SMPlayerCharacter.generated.h"
 
@@ -14,7 +16,7 @@ class USMPushComponent;
 class USMStateComponent;
 
 UCLASS()
-class STONEMAN_API ASMPlayerCharacter : public ASMCharacterBase
+class STONEMAN_API ASMPlayerCharacter : public ASMCharacterBase, public ISMElementInterface
 {
 	GENERATED_BODY()
 
@@ -24,6 +26,8 @@ public:
 	void SetState(const ESMPlayerState NewState) { PlayerState = NewState; }
 	ESMPlayerState GetState() const { return PlayerState; }
 	void ChangeColor();
+
+	virtual ESMElement GetElement() override { return ElementComponent->GetElement(); }
 
 protected:
 	virtual void BeginPlay() override;

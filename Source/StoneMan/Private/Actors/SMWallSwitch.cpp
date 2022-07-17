@@ -16,7 +16,9 @@ ASMWallSwitch::ASMWallSwitch()
 	ArmMesh->SetupAttachment(BaseMesh);
 
 	SwitchTimeline = CreateDefaultSubobject<UTimelineComponent>("SwitchTimeline");
-	CalculateRotation();
+
+	DisabledRotation = ArmMesh->GetRelativeRotation();
+	EnabledRotation = FRotator(DisabledRotation.Pitch + SwitchAngle, DisabledRotation.Yaw, DisabledRotation.Roll);
 }
 
 void ASMWallSwitch::OnConstruction(const FTransform& Transform)
@@ -24,7 +26,7 @@ void ASMWallSwitch::OnConstruction(const FTransform& Transform)
 	Super::OnConstruction(Transform);
 
 	SetSwitchRotation(IsEnabled ? EnabledRotation : DisabledRotation);
-	SetLightColor(IsEnabled);
+	SetLightColor(IsEnabled ? ONColor : OFFColor);
 }
 
 void ASMWallSwitch::BeginPlay()
@@ -44,9 +46,16 @@ void ASMWallSwitch::BeginPlay()
 
 void ASMWallSwitch::Interact(AActor* WhoInteract)
 {
+	if(SwitchTimeline->IsPlaying()) return;
+
 	!bSwitched
-		? SwitchTimeline->Play()
-		: SwitchTimeline->Reverse();
+		? SwitchTimeline->PlayFromStart()
+		: SwitchTimeline->ReverseFromEnd();
+}
+
+void ASMWallSwitch::SetOutlineVisible(const bool Visible)
+{
+	BaseMesh->SetRenderCustomDepth(Visible);
 }
 
 void ASMWallSwitch::OnSwitchTimelineCallback(float Alpha)
@@ -58,21 +67,15 @@ void ASMWallSwitch::OnSwitchTimelineCallback(float Alpha)
 void ASMWallSwitch::OnSwitchTimelineFinishedCallback()
 {
 	SetSwitchEnabled(!bSwitched);
-	SetLightColor(bSwitched);
+	SetLightColor(bSwitched ? ONColor : OFFColor);
 }
 
-void ASMWallSwitch::SetLightColor(const bool Enabled) const
+void ASMWallSwitch::SetLightColor(const FLinearColor& NewColor) const
 {
-	BaseMesh->SetVectorParameterValueOnMaterials(LightColorParameterName, Enabled ? FVector(ONColor) : FVector(OFFColor));
+	BaseMesh->SetVectorParameterValueOnMaterials(LightColorParameterName, FVector(NewColor));
 }
 
 void ASMWallSwitch::SetSwitchRotation(const FRotator& NewRotation) const
 {
 	ArmMesh->SetRelativeRotation(NewRotation);
-}
-
-void ASMWallSwitch::CalculateRotation()
-{
-	DisabledRotation = ArmMesh->GetRelativeRotation();
-	EnabledRotation = FRotator(DisabledRotation.Pitch + SwitchAngle, DisabledRotation.Yaw, DisabledRotation.Roll);
 }
