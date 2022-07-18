@@ -224,12 +224,9 @@ void ASMPlayerCharacter::OnInteraction()
 	InteractionComponent->Interact();
 }
 
-void ASMPlayerCharacter::ChangeColor()
+void ASMPlayerCharacter::ChangeColor() const
 {
 	if(!GetMesh()) return;
 
-	const auto Material = ElementComponent->GetMaterial();
-	if(!Material) return;
-
-	GetMesh()->SetMaterial(0, Material);
+	GetMesh()->SetVectorParameterValueOnMaterials(ElementComponent->GetMaterialParameterName(), FVector(ElementComponent->GetElementColor()));
 }

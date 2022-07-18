@@ -27,6 +27,8 @@ public:
 	void StartMoving(const FVector& NewPushVector);
 	void StopMoving();
 
+	void UpdateColor();
+
 	virtual ESMElement GetElement() override { return ElementComponent->GetElement(); };
 
 protected:
@@ -54,7 +56,7 @@ protected:
 	TArray<FTransform> PushTransforms;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=SMPushableActor, meta=(ClampMin = 0.f))
-	float PushSpeed = 100.f;
+	float PushSpeed = 100.f;	
 
 private:
 	UPROPERTY()

@@ -44,7 +44,7 @@ void ASMSwitchPlane::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 
-	StaticMesh->SetMaterial(0, ElementComponent->GetMaterial());
+	StaticMesh->SetMaterial(ElementComponent->GetMaterialElementIndex(), ElementComponent->GetElementMaterial());
 }
 
 void ASMSwitchPlane::BeginPlay()

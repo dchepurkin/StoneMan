@@ -45,7 +45,7 @@ void ASMCharacterBase::OnDeath()
 	if(GetCharacterMovement()) GetCharacterMovement()->DisableMovement();
 	if(GetCapsuleComponent()) GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	DestructComponent->SetMaterial(ElementComponent->GetMaterial());
+	DestructComponent->SetElementColor(ElementComponent->GetMaterialParameterName(), ElementComponent->GetElementColor());
 	DestructComponent->Destruct();
 	WeaponComponent->DestroyComponent();
 }

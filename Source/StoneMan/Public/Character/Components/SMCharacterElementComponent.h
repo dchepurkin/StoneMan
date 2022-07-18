@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Character/Components/SMElementComponent.h"
+#include "Components/SMElementComponent.h"
 #include "SMCharacterElementComponent.generated.h"
 
 DECLARE_MULTICAST_DELEGATE(FOnChangeElementSignature)
@@ -20,7 +20,7 @@ public:
 	virtual void BeginPlay() override;
 	float GetDamageFactor(const UDamageType* DamageType) const;
 	void SetElement(const ESMElement NewElement);
-	virtual UMaterialInstance* GetMaterial() const override { return ElementMaterials[CurrentElement]; }
+	virtual const FLinearColor& GetElementColor() const override { return ElementColors[CurrentElement]; }
 	virtual ESMElement GetElement() const override { return CurrentElement; };
 
 private:

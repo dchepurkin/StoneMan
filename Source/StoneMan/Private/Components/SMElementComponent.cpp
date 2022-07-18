@@ -1,6 +1,6 @@
 // Created by DChepurkin
 
-#include "Character/Components/SMElementComponent.h"
+#include "Components/SMElementComponent.h"
 
 USMElementComponent::USMElementComponent()
 {

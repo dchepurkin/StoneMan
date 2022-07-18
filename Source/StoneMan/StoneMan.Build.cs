@@ -8,13 +8,14 @@ public class StoneMan : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "GeometryCollectionEngine"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "GeometryCollectionEngine", "Niagara"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 		
 		PublicIncludePaths.AddRange(new string[]
 		{
 			"StoneMan/Public",
+			"StoneMan/Public/Components",
 			"StoneMan/Public/Interfaces",
 			"StoneMan/Public/Environments",
 			"StoneMan/Public/Environments/Doors",

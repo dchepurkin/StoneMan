@@ -42,7 +42,7 @@ void ASMPushableActor::BeginPlay()
 	Super::BeginPlay();
 
 	check(ElementComponent);
-	
+
 	XAxisCollision->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnAxisCollisionBeginOverlap);
 	YAxisCollision->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnAxisCollisionBeginOverlap);
 
@@ -97,7 +97,7 @@ void ASMPushableActor::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 
-	StaticMesh->SetMaterial(0, ElementComponent->GetMaterial());
+	UpdateColor();
 }
 
 const FTransform& ASMPushableActor::GetClosestPushTransform(const AActor* Actor)
@@ -142,6 +142,11 @@ void ASMPushableActor::StopMoving()
 	SwitchAxisCollision();
 
 	SetActorTickEnabled(false);
+}
+
+void ASMPushableActor::UpdateColor()
+{
+	StaticMesh->SetVectorParameterValueOnMaterials(ElementComponent->GetMaterialParameterName(), FVector(ElementComponent->GetElementColor()));
 }
 
 USMPushComponent* ASMPushableActor::GetPushComponent(const AActor* Actor)

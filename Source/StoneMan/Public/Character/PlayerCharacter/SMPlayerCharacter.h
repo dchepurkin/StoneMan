@@ -25,7 +25,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void SetState(const ESMPlayerState NewState) { PlayerState = NewState; }
 	ESMPlayerState GetState() const { return PlayerState; }
-	void ChangeColor();
+	void ChangeColor() const;
 
 	virtual ESMElement GetElement() override { return ElementComponent->GetElement(); }
 
