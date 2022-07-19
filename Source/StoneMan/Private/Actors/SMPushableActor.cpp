@@ -12,6 +12,7 @@ ASMPushableActor::ASMPushableActor()
 	PrimaryActorTick.bStartWithTickEnabled = false;
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
+	StaticMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	SetRootComponent(StaticMesh);
 
 	XAxisCollision = CreateDefaultSubobject<UBoxComponent>("XAxisCollision");

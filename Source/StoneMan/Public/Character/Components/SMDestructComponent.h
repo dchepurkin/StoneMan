@@ -29,7 +29,7 @@ public:
 	USMDestructComponent();
 
 	void Destruct();
-	void SetElementColor(const FName& NewMaterialParameterName, const FLinearColor& NewColor);
+	void SetElementMaterial(UMaterialInstance* NewMaterial);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMDestructComponent)
@@ -49,8 +49,5 @@ protected:
 
 private:
 	UPROPERTY()
-	FLinearColor ElementColor;
-
-	UPROPERTY()
-	FName MaterialParameterName;
+	UMaterialInstance* ElementMaterial;
 };

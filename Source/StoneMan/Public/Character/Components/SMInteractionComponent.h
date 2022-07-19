@@ -18,7 +18,7 @@ public:
 	void Interact();
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=Components)
 	UBoxComponent* InteractionCollision;
 
 	virtual void BeginPlay() override;

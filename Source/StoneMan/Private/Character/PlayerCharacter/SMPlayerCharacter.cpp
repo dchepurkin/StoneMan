@@ -4,7 +4,7 @@
 #include "SMHealthComponent.h"
 #include "SMPushComponent.h"
 #include "SMCameraComponent.h"
-#include "SMCharacterElementComponent.h"
+#include "SMElementComponent.h"
 #include "SMInteractionComponent.h"
 #include "SMWeaponComponent.h"
 #include "Components/CapsuleComponent.h"

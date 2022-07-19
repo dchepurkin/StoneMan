@@ -27,7 +27,7 @@ public:
 	void StartMoving(const FVector& NewPushVector);
 	void StopMoving();
 
-	void UpdateColor();
+	virtual void UpdateColor();
 
 	virtual ESMElement GetElement() override { return ElementComponent->GetElement(); };
 

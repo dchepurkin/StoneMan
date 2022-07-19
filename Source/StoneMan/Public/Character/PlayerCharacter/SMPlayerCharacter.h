@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SMCharacterElementComponent.h"
+#include "SMElementComponent.h"
 #include "SMCoreTypes.h"
 #include "SMElementInterface.h"
 #include "Character/SMCharacterBase.h"

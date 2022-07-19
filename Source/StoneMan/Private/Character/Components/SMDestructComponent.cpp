@@ -29,7 +29,8 @@ void USMDestructComponent::Destruct()
 		const auto GeometryComponent = NewObject<UGeometryCollectionComponent>(this, UGeometryCollectionComponent::StaticClass());
 		if(!GeometryComponent) continue;
 
-		GeometryComponent->SetVectorParameterValueOnMaterials(MaterialParameterName, FVector(ElementColor));
+		GeometryComponent->SetMaterial(0, ElementMaterial);
+		GeometryComponent->SetMaterial(1, ElementMaterial);
 
 		GeometryComponent->AttachToComponent(Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale, SocketName);
 		GeometryComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
@@ -41,8 +42,7 @@ void USMDestructComponent::Destruct()
 	Mesh->DestroyComponent();
 }
 
-void USMDestructComponent::SetElementColor(const FName& NewMaterialParameterName, const FLinearColor& NewColor)
+void USMDestructComponent::SetElementMaterial(UMaterialInstance* NewMaterial)
 {
-	ElementColor = NewColor;
-	MaterialParameterName = NewMaterialParameterName;
+	ElementMaterial = NewMaterial;
 }

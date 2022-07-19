@@ -10,6 +10,7 @@ ASMWallSwitch::ASMWallSwitch()
 	PrimaryActorTick.bCanEverTick = false;
 
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>("BaseMesh");
+	BaseMesh->CustomDepthStencilValue = 1;
 	SetRootComponent(BaseMesh);
 
 	ArmMesh = CreateDefaultSubobject<UStaticMeshComponent>("ArmMesh");

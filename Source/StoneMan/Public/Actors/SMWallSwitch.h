@@ -19,7 +19,7 @@ public:
 	virtual void SetOutlineVisible(const bool Visible) override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual FString GetInteractionMessage() const override { return bSwitched ? InteractionMessageOFF : InteractionMessageON; }
+	virtual const FString& GetInteractionMessage() const override { return bSwitched ? InteractionMessageOFF : InteractionMessageON; }
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)

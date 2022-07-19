@@ -7,18 +7,26 @@
 #include "Components/ActorComponent.h"
 #include "SMElementComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnChangeElementSignature)
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class STONEMAN_API USMElementComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
+	FOnChangeElementSignature OnChangeElement;
+	
 	USMElementComponent();
+	virtual void BeginPlay() override;
 	virtual ESMElement GetElement() const { return Element; }
 	virtual const FLinearColor& GetElementColor() const { return ElementColors[Element]; }
 	virtual UMaterialInstance* GetElementMaterial() const { return ElementMaterials[Element]; }
 	const FName& GetMaterialParameterName() const { return MaterialParameterName; }
 	const int32& GetMaterialElementIndex() const { return MaterialElementIndex; }
+
+	void SetElement(const ESMElement NewElement);
+	float GetDamageFactor(const UDamageType* DamageType) const;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=SMElement)

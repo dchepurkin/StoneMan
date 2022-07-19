@@ -2,7 +2,7 @@
 
 #include "SMCharacterBase.h"
 
-#include "SMCharacterElementComponent.h"
+#include "SMElementComponent.h"
 #include "SMDamageTypeBase.h"
 #include "SMDestructComponent.h"
 #include "SMHealthComponent.h"
@@ -19,7 +19,7 @@ ASMCharacterBase::ASMCharacterBase(const FObjectInitializer& ObjectInitializer)
 	DestructComponent = CreateDefaultSubobject<USMDestructComponent>("DestructComponent");
 	HealthComponent = CreateDefaultSubobject<USMHealthComponent>("HealthComponent");
 	WeaponComponent = CreateDefaultSubobject<USMWeaponComponent>("WeaponComponent");
-	ElementComponent = CreateDefaultSubobject<USMCharacterElementComponent>("ElementComponent");
+	ElementComponent = CreateDefaultSubobject<USMElementComponent>("ElementComponent");
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Destructible, ECR_Ignore);
 }
@@ -45,7 +45,7 @@ void ASMCharacterBase::OnDeath()
 	if(GetCharacterMovement()) GetCharacterMovement()->DisableMovement();
 	if(GetCapsuleComponent()) GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	DestructComponent->SetElementColor(ElementComponent->GetMaterialParameterName(), ElementComponent->GetElementColor());
+	DestructComponent->SetElementMaterial(ElementComponent->GetElementMaterial());
 	DestructComponent->Destruct();
 	WeaponComponent->DestroyComponent();
 }
