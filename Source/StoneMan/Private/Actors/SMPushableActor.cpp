@@ -15,25 +15,10 @@ ASMPushableActor::ASMPushableActor()
 	StaticMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	SetRootComponent(StaticMesh);
 
-	XAxisCollision = CreateDefaultSubobject<UBoxComponent>("XAxisCollision");
-	XAxisCollision->SetupAttachment(GetRootComponent());
-	XAxisCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-	XAxisCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-
-	XEndAxisCollision = CreateDefaultSubobject<UBoxComponent>("XEndAxisCollision");
-	XEndAxisCollision->SetupAttachment(GetRootComponent());
-	XEndAxisCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-	XEndAxisCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-
-	YAxisCollision = CreateDefaultSubobject<UBoxComponent>("YAxisCollision");
-	YAxisCollision->SetupAttachment(GetRootComponent());
-	YAxisCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-	YAxisCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-
-	YEndAxisCollision = CreateDefaultSubobject<UBoxComponent>("YEndAxisCollision");
-	YEndAxisCollision->SetupAttachment(GetRootComponent());
-	YEndAxisCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
-	YEndAxisCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	CreateCollision(XAxisCollision, "XAxisCollision");
+	CreateCollision(XEndAxisCollision, "XEndAxisCollision");
+	CreateCollision(YAxisCollision, "YAxisCollision");
+	CreateCollision(YEndAxisCollision, "YEndAxisCollision");
 
 	ElementComponent = CreateDefaultSubobject<USMElementComponent>("ElementComponent");
 }
@@ -190,4 +175,12 @@ void ASMPushableActor::SwitchAxisCollision() const
 
 	XAxisCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	YAxisCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+void ASMPushableActor::CreateCollision(UBoxComponent*& Collision, const FName& CollisionName)
+{
+	Collision = CreateDefaultSubobject<UBoxComponent>(CollisionName);
+	Collision->SetupAttachment(GetRootComponent());
+	Collision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	Collision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 }

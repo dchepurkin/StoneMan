@@ -79,4 +79,5 @@ private:
 	bool IsFreeBehindTheActor(const FVector& MoveDirection);
 
 	void SwitchAxisCollision() const;
+	void CreateCollision(UBoxComponent*& Collision, const FName& CollisionName);
 };
