@@ -56,7 +56,7 @@ protected:
 	TArray<FTransform> PushTransforms;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=SMPushableActor, meta=(ClampMin = 0.f))
-	float PushSpeed = 100.f;	
+	float PushSpeed = 100.f;
 
 private:
 	UPROPERTY()
@@ -76,7 +76,9 @@ private:
 	void OnEndAxisCollisionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	USMPushComponent* GetPushComponent(const AActor* Actor);
-	bool IsFreeBehindTheActor(const FVector& MoveDirection);
+	bool IsClearToMove(const FVector& MoveDirection);
+	bool CheckWals(const FVector& TracePoint, const FVector& HalfSize);
+	bool CheckFloor(const FVector& TracePoint, const FVector& HalfSize) const;
 
 	void SwitchAxisCollision() const;
 	void CreateCollision(UBoxComponent*& Collision, const FName& CollisionName);

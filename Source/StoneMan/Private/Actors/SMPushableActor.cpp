@@ -73,7 +73,7 @@ void ASMPushableActor::Tick(float DeltaTime)
 	const auto PushDuration = PushSpeed * DeltaTime * PushVector;
 	AddActorWorldOffset(PushDuration, true);
 
-	if(!IsFreeBehindTheActor(PushVector))
+	if(!IsClearToMove(PushVector))
 	{
 		if(const auto PushComponent = GetPushComponent(PushingActor)) PushComponent->RestartPush();
 	}
@@ -112,7 +112,7 @@ const FTransform& ASMPushableActor::GetClosestPushTransform(const AActor* Actor)
 
 bool ASMPushableActor::CanMove(const FVector& MoveDirection)
 {
-	return PushingActor != nullptr && IsFreeBehindTheActor(MoveDirection);
+	return PushingActor != nullptr && IsClearToMove(MoveDirection);
 }
 
 void ASMPushableActor::StartMoving(const FVector& NewPushVector)
@@ -140,17 +140,23 @@ USMPushComponent* ASMPushableActor::GetPushComponent(const AActor* Actor)
 	return Actor ? Actor->FindComponentByClass<USMPushComponent>() : nullptr;
 }
 
-bool ASMPushableActor::IsFreeBehindTheActor(const FVector& MoveDirection)
+bool ASMPushableActor::IsClearToMove(const FVector& MoveDirection)
 {
-	if(!GetWorld() || !StaticMesh) return false;
-
+	if(!StaticMesh) return false;
+	
 	const auto TracePoint = GetActorLocation() + MoveDirection;
-
 	FVector MinLocalBounds;
 	FVector MaxLocalBounds;
 	StaticMesh->GetLocalBounds(MinLocalBounds, MaxLocalBounds);
-
 	const auto HalfSize = MaxLocalBounds * StaticMesh->GetComponentScale();
+
+	return CheckWals(TracePoint, HalfSize) && CheckFloor(TracePoint, HalfSize);
+}
+
+bool ASMPushableActor::CheckWals(const FVector& TracePoint, const FVector& HalfSize)
+{
+	if(!GetWorld()) return false;
+
 	FHitResult HitResult;
 
 	UKismetSystemLibrary::BoxTraceSingle(GetWorld(),
@@ -166,6 +172,19 @@ bool ASMPushableActor::IsFreeBehindTheActor(const FVector& MoveDirection)
 	                                     true);
 
 	return !HitResult.bBlockingHit;
+}
+
+bool ASMPushableActor::CheckFloor(const FVector& TracePoint, const FVector& HalfSize) const
+{
+	if(!GetWorld()) return false;
+
+	const auto TraceEnd = TracePoint - FVector(0.f, 0.f, 1.f) * HalfSize - FVector(0.f, .0f, 10.f);
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.AddIgnoredActor(this);
+	GetWorld()->LineTraceSingleByChannel(HitResult, TracePoint, TraceEnd, ECC_WorldStatic, CollisionQueryParams);
+
+	return HitResult.bBlockingHit;
 }
 
 void ASMPushableActor::SwitchAxisCollision() const
