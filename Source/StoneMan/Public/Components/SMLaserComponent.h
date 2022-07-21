@@ -36,7 +36,7 @@ public:
 	void RotateLaser();
 	void SetLaserEnabled(const bool Enabled);
 	bool IsEnabled() const { return bEnabled; }
-	bool IsUndisablable() const {return Undisabable;}
+	bool IsUndisablable() const { return Undisabable; }
 
 	UFUNCTION(BlueprintCallable)
 	const FVector& GetConstructionLaserDirection() const { return LaserDirectionMap[LaserDirestion]; }
@@ -50,6 +50,15 @@ protected:
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category=SMLaserComponent)
 	ESMLaserDirestion LaserDirestion = ESMLaserDirestion::Forward;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="SMLaserComponent|Damage")
+	bool IsDamaged = false;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="SMLaserComponent|Damage", meta=(ClampMin = 0.001f, EditCondition=IsDamaged))
+	float Damage = 0.5f;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="SMLaserComponent|Damage", meta=(ClampMin = 0.001f, EditCondition=IsDamaged))
+	float DamageRate = 0.01f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMLaserComponent)
 	FString LaserEndParameterName = "LaserEnd";
@@ -67,10 +76,15 @@ protected:
 
 private:
 	bool Undisabable = false;
+	FTimerHandle DamageTimerHandle;
+
 	FVector CurrentLaserDirection;
 
 	UPROPERTY()
-	AActor* CurrentNextLaser;
+	AActor* CurrentLaserTrigger;
+
+	UPROPERTY()
+	AActor* CurrenDamagedActor;
 
 	UPROPERTY()
 	UNiagaraComponent* Laser;
@@ -82,9 +96,12 @@ private:
 		{ESMLaserDirestion::Right, FVector(0.f, 1.f, 0.f)},
 		{ESMLaserDirestion::Left, FVector(0.f, -1.f, 0.f)}
 	};
-	
+
 	void TryToDetectLaserTrigger(const FHitResult& HitResult);
-	void ClearNextLaser();
+	void ClearLaserTrigger();
 	void MakeLaser(FVector& LaserEnd, FHitResult& HitResult) const;
 	bool CheckForPriviewLaser(const FHitResult& HitResult) const;
+
+	void MakeDamage(AActor* DamagedActor) const;
+	void SetDamageTimerEnabled(AActor* DamagedActor);
 };

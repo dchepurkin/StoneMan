@@ -10,12 +10,6 @@ USMElementComponent::USMElementComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void USMElementComponent::BeginPlay()
-{
-	Super::BeginPlay();
-	SetElement(Element);
-}
-
 void USMElementComponent::SetElement(const ESMElement NewElement)
 {
 	Element = NewElement;

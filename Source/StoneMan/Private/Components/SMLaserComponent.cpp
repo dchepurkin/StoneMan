@@ -33,7 +33,8 @@ void USMLaserComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	FVector LaserEnd;
 	FHitResult HitResult;
 	MakeLaser(LaserEnd, HitResult);
-	CheckForPriviewLaser(HitResult) ? TryToDetectLaserTrigger(HitResult) : ClearNextLaser();
+	if(IsDamaged) SetDamageTimerEnabled(HitResult.GetActor());
+	CheckForPriviewLaser(HitResult) ? TryToDetectLaserTrigger(HitResult) : ClearLaserTrigger();
 
 	Laser->SetNiagaraVariableVec3(LaserEndParameterName, LaserEnd);
 }
@@ -54,7 +55,7 @@ void USMLaserComponent::SetLaserEnabled(const bool Enabled)
 	SetComponentTickEnabled(bEnabled);
 	Laser->SetVisibility(bEnabled);
 
-	if(!bEnabled) ClearNextLaser();
+	if(!bEnabled) ClearLaserTrigger();
 }
 
 void USMLaserComponent::MakeLaser(FVector& LaserEnd, FHitResult& HitResult) const
@@ -73,23 +74,48 @@ void USMLaserComponent::MakeLaser(FVector& LaserEnd, FHitResult& HitResult) cons
 
 bool USMLaserComponent::CheckForPriviewLaser(const FHitResult& HitResult) const
 {
-	return HitResult.GetActor()
-		&& HitResult.GetActor()->FindComponentByClass<USMLaserComponent>()
-		&& HitResult.GetActor()->FindComponentByClass<USMLaserComponent>()->CurrentNextLaser != GetOwner();
+	if(!HitResult.GetActor()) return false;
+	if(!HitResult.GetActor()->FindComponentByClass<USMLaserComponent>()) return true;
+
+	return HitResult.GetActor()->FindComponentByClass<USMLaserComponent>()->CurrentLaserTrigger != GetOwner();
+}
+
+void USMLaserComponent::MakeDamage(AActor* DamagedActor) const
+{
+	if(DamagedActor) DamagedActor->TakeDamage(Damage, FDamageEvent(), nullptr, nullptr);
+}
+
+void USMLaserComponent::SetDamageTimerEnabled(AActor* DamagedActor)
+{
+	if(!GetWorld()) return;
+
+	if(DamagedActor && DamagedActor != CurrenDamagedActor)
+	{
+		CurrenDamagedActor = DamagedActor;
+		FTimerDelegate DamageTimerDelegate;
+		DamageTimerDelegate.BindUObject(this, &ThisClass::MakeDamage, CurrenDamagedActor);
+
+		GetWorld()->GetTimerManager().SetTimer(DamageTimerHandle, DamageTimerDelegate, DamageRate, true);
+	}
+	else if(!DamagedActor)
+	{
+		CurrenDamagedActor = nullptr;
+		GetWorld()->GetTimerManager().ClearTimer(DamageTimerHandle);
+	}
 }
 
 void USMLaserComponent::TryToDetectLaserTrigger(const FHitResult& HitResult)
 {
 	if(HitResult.GetComponent() && HitResult.GetComponent()->ComponentHasTag(LaserTriggerTag))
 	{
-		CurrentNextLaser = HitResult.GetActor();
-		OnDetectLaserTrigger.Broadcast(CurrentNextLaser);
+		CurrentLaserTrigger = HitResult.GetActor();
+		OnDetectLaserTrigger.Broadcast(CurrentLaserTrigger);
 	}
-	else ClearNextLaser();
+	else ClearLaserTrigger();
 }
 
-void USMLaserComponent::ClearNextLaser()
+void USMLaserComponent::ClearLaserTrigger()
 {
-	OnLoseLaserTrigger.Broadcast(CurrentNextLaser);
-	CurrentNextLaser = nullptr;
+	OnLoseLaserTrigger.Broadcast(CurrentLaserTrigger);
+	CurrentLaserTrigger = nullptr;
 }

@@ -18,7 +18,6 @@ public:
 	FOnChangeElementSignature OnChangeElement;
 	
 	USMElementComponent();
-	virtual void BeginPlay() override;
 	virtual ESMElement GetElement() const { return Element; }
 	virtual const FLinearColor& GetElementColor() const { return ElementColors[Element]; }
 	virtual UMaterialInstance* GetElementMaterial() const { return ElementMaterials[Element]; }

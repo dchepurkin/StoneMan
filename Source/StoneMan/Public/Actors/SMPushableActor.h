@@ -26,6 +26,7 @@ public:
 
 	void StartMoving(const FVector& NewPushVector);
 	void StopMoving();
+	void ResetLocation() const;
 
 	virtual void UpdateColor();
 

@@ -142,9 +142,9 @@ USMPushComponent* ASMPushableActor::GetPushComponent(const AActor* Actor)
 
 bool ASMPushableActor::IsClearToMove(const FVector& MoveDirection)
 {
-	if(!StaticMesh) return false;
-	
-	const auto TracePoint = GetActorLocation() + MoveDirection;
+	if(!StaticMesh || !GetWorld()) return false;
+
+	const auto TracePoint = GetActorLocation() + MoveDirection * 2.f;
 	FVector MinLocalBounds;
 	FVector MaxLocalBounds;
 	StaticMesh->GetLocalBounds(MinLocalBounds, MaxLocalBounds);
@@ -202,4 +202,9 @@ void ASMPushableActor::CreateCollision(UBoxComponent*& Collision, const FName& C
 	Collision->SetupAttachment(GetRootComponent());
 	Collision->SetCollisionResponseToAllChannels(ECR_Ignore);
 	Collision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+}
+
+void ASMPushableActor::ResetLocation() const
+{
+	if(GetActorLocation() == StartPosition) return;
 }
