@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "SMResetPushableActor.generated.h"
 
+class USoundCue;
 class ASMPushableActor;
 class UTimelineComponent;
 
@@ -39,20 +40,33 @@ protected:
 	UCurveFloat* TimelineCurve;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMReseter)
-	float RotationAngle = 110.f;
+	float RotationAngle = 60.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMReseter)
 	FString InteractionMessage = "Reset";
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="SMReseter|Sounds")
+	USoundCue* StartSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="SMReseter|Sounds")
+	USoundCue* MidleSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="SMReseter|Sounds")
+	USoundCue* EndSound;
+
 	virtual void BeginPlay() override;
 
 private:
+	bool bGoBack = false;
 	FRotator StartRotation;
 	FRotator EndRotation;
 	
-	UFUNCTION()
 	void ResetActors();
+	void PlaySound(USoundCue* Sound) const;
 
 	UFUNCTION()
 	void OnTimeline(const float Alpha);
+
+	UFUNCTION()
+	void OnTimelineEnd();
 };

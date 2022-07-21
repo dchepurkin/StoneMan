@@ -33,8 +33,9 @@ void USMLaserComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	FVector LaserEnd;
 	FHitResult HitResult;
 	MakeLaser(LaserEnd, HitResult);
+	
 	if(IsDamaged) SetDamageTimerEnabled(HitResult.GetActor());
-	CheckForPriviewLaser(HitResult) ? TryToDetectLaserTrigger(HitResult) : ClearLaserTrigger();
+	else CheckForPriviewLaser(HitResult) ? TryToDetectLaserTrigger(HitResult) : ClearLaserTrigger();
 
 	Laser->SetNiagaraVariableVec3(LaserEndParameterName, LaserEnd);
 }

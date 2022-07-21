@@ -10,6 +10,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogLaserCube, All, All);
 ASMLaserCube::ASMLaserCube()
 {
 	LaserComponent = CreateDefaultSubobject<USMLaserComponent>("LaserComponent");
+	LaserComponent->SetupAttachment(GetRootComponent());
 	StaticMesh->CustomDepthStencilValue = 1;
 
 	CreateLaserTrigger(XLaserTrigger, "XLaserTrigger");
@@ -43,7 +44,7 @@ void ASMLaserCube::UpdateLaserColor() const
 void ASMLaserCube::OnDetectLaserTrigger(AActor* Actor)
 {
 	if(!Actor || !Actor->Implements<USMLaserInterface>()) return;
-	
+
 	Cast<ISMLaserInterface>(Actor)->Activate(ElementComponent->GetElement());
 }
 

@@ -4,18 +4,22 @@
 
 #include "SMPushableActor.h"
 #include "Components/TimelineComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 ASMResetPushableActor::ASMResetPushableActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bStartWithTickEnabled = false;
 
-	BaseMesh->CreateDefaultSubobject<UStaticMeshComponent>("BaseMesh");
+	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>("BaseMesh");
 	BaseMesh->CustomDepthStencilValue = 1;
+	BaseMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	SetRootComponent(BaseMesh);
 
 	ArmMesh = CreateDefaultSubobject<UStaticMeshComponent>("ArmMesh");
 	ArmMesh->CustomDepthStencilValue = 1;
+	ArmMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	ArmMesh->SetupAttachment(BaseMesh);
 
 	Timeline = CreateDefaultSubobject<UTimelineComponent>("Timeline");
@@ -29,7 +33,7 @@ void ASMResetPushableActor::BeginPlay()
 	OnTimelineFloat.BindDynamic(this, &ThisClass::OnTimeline);
 
 	FOnTimelineEvent OnTimelineEnd;
-	OnTimelineEnd.BindDynamic(this, &ThisClass::ResetActors);
+	OnTimelineEnd.BindDynamic(this, &ThisClass::OnTimelineEnd);
 
 	Timeline->AddInterpFloat(TimelineCurve, OnTimelineFloat);
 	Timeline->SetTimelineFinishedFunc(OnTimelineEnd);
@@ -40,7 +44,10 @@ void ASMResetPushableActor::BeginPlay()
 
 void ASMResetPushableActor::Interact(AActor* WhoInteract)
 {
-	if(!Timeline->IsPlaying()) Timeline->PlayFromStart();
+	if(Timeline->IsPlaying() || !TimelineCurve) return;
+
+	Timeline->PlayFromStart();
+	PlaySound(StartSound);
 }
 
 void ASMResetPushableActor::SetOutlineVisible(const bool Visible)
@@ -57,8 +64,29 @@ void ASMResetPushableActor::ResetActors()
 	}
 }
 
+void ASMResetPushableActor::PlaySound(USoundCue* Sound) const
+{
+	UGameplayStatics::PlaySoundAtLocation(this, Sound, GetActorLocation(), FRotator::ZeroRotator);
+}
+
 void ASMResetPushableActor::OnTimeline(const float Alpha)
 {
 	const auto CurrentRotaton = FMath::Lerp(StartRotation, EndRotation, Alpha);
 	ArmMesh->SetRelativeRotation(CurrentRotaton);
+}
+
+void ASMResetPushableActor::OnTimelineEnd()
+{
+	if(!bGoBack)
+	{
+		bGoBack = true;
+		ResetActors();
+		PlaySound(MidleSound);
+		Timeline->ReverseFromEnd();
+	}
+	else
+	{
+		bGoBack = false;
+		PlaySound(EndSound);
+	}
 }
