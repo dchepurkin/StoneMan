@@ -89,3 +89,9 @@ void ASMLaserCube::Disactivate()
 	UpdateColor();
 	LaserComponent->SetLaserEnabled(false);
 }
+
+void ASMLaserCube::ResetCondition()
+{
+	Super::ResetCondition();
+	if(LaserComponent) LaserComponent->ResetDirection();
+}

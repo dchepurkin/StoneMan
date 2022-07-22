@@ -26,7 +26,7 @@ public:
 
 	void StartMoving(const FVector& NewPushVector);
 	void StopMoving();
-	virtual void ResetLocation();
+	virtual void ResetCondition();
 
 	virtual void UpdateColor();
 
@@ -57,7 +57,7 @@ protected:
 	TArray<FTransform> PushTransforms;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=SMPushableActor, meta=(ClampMin = 0.f))
-	float PushSpeed = 100.f;	
+	float PushSpeed = 100.f;
 
 private:
 	FVector PushVector = FVector::ZeroVector;
@@ -75,7 +75,7 @@ private:
 
 	UFUNCTION()
 	void OnEndAxisCollisionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-	
+
 	USMPushComponent* GetPushComponent(const AActor* Actor);
 	bool IsClearToMove(const FVector& MoveDirection);
 	bool CheckWals(const FVector& TracePoint, const FVector& HalfSize);

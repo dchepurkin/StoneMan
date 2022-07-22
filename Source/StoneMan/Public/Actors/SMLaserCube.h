@@ -26,6 +26,8 @@ public:
 	virtual void Activate(const ESMElement Element) override;
 	virtual void Disactivate() override;
 
+	virtual void ResetCondition() override;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
 	USMLaserComponent* LaserComponent;	

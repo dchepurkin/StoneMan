@@ -60,7 +60,7 @@ void ASMResetPushableActor::ResetActors()
 {
 	for(const auto ActorToReset : ActorsToReset)
 	{
-		if(ActorToReset) ActorToReset->ResetLocation();
+		if(ActorToReset) ActorToReset->ResetCondition();
 	}
 }
 

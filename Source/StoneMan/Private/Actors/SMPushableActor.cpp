@@ -204,7 +204,7 @@ void ASMPushableActor::CreateCollision(UBoxComponent*& Collision, const FName& C
 	Collision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 }
 
-void ASMPushableActor::ResetLocation()
+void ASMPushableActor::ResetCondition()
 {
 	SetActorLocation(StartPosition);
 }

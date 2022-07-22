@@ -35,6 +35,7 @@ public:
 	void SetLaserColor(const FLinearColor& NewColor) const;
 	void RotateLaser();
 	void SetLaserEnabled(const bool Enabled);
+	void ResetDirection();
 	bool IsEnabled() const { return bEnabled; }
 	bool IsUndisablable() const { return Undisabable; }
 

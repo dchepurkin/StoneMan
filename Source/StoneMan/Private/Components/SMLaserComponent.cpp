@@ -22,7 +22,7 @@ void USMLaserComponent::BeginPlay()
 
 	Undisabable = bEnabled;
 
-	CurrentLaserDirection = LaserDirectionMap[LaserDirestion];
+	ResetDirection();
 	SetLaserEnabled(bEnabled);
 }
 
@@ -119,4 +119,9 @@ void USMLaserComponent::ClearLaserTrigger()
 {
 	OnLoseLaserTrigger.Broadcast(CurrentLaserTrigger);
 	CurrentLaserTrigger = nullptr;
+}
+
+void USMLaserComponent::ResetDirection()
+{
+	CurrentLaserDirection = LaserDirectionMap[LaserDirestion];
 }
