@@ -36,6 +36,7 @@ public:
 	void RotateLaser();
 	void SetLaserEnabled(const bool Enabled);
 	void ResetDirection();
+	void SetLaserDirection(const FVector& NewDirection) { CurrentLaserDirection = NewDirection; }
 	bool IsEnabled() const { return bEnabled; }
 	bool IsUndisablable() const { return Undisabable; }
 
@@ -60,6 +61,9 @@ protected:
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="SMLaserComponent|Damage", meta=(ClampMin = 0.001f, EditCondition=IsDamaged))
 	float DamageRate = 0.01f;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="SMLaserComponent|Damage", meta=(EditCondition=IsDamaged))
+	FLinearColor DamageColor = FLinearColor(1.f, 0.f, 0.759645f);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMLaserComponent)
 	FString LaserEndParameterName = "LaserEnd";

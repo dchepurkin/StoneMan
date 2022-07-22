@@ -3,29 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SMCoreTypes.h"
 #include "Environments/Doors/SMDoorBase.h"
 #include "SMClosedDoor.generated.h"
-
-class ASMSwitchBase;
-
-UENUM(BlueprintType)
-enum class EOpenOn:uint8
-{
-	OpenOnSwitchON = 0,
-	OpenOnSwitchOFF
-};
-
-USTRUCT(BlueprintType)
-struct FSwitches
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	ASMSwitchBase* Switch = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, DisplayName = "Open On Switch(ON/OFF)")
-	EOpenOn OpenOn;
-};
 
 UCLASS(Blueprintable)
 class STONEMAN_API ASMClosedDoor : public ASMDoorBase

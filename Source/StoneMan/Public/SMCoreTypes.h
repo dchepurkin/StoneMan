@@ -3,6 +3,7 @@
 #include "SMCoreTypes.generated.h"
 
 class ASMWeaponBase;
+class ASMSwitchBase;
 
 UENUM(BlueprintType)
 enum class ESMPlayerState : uint8
@@ -33,4 +34,23 @@ struct FWeaponData
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName SocketName = NAME_None;
+};
+
+UENUM(BlueprintType)
+enum class EOpenOn:uint8
+{
+	OpenOnSwitchON = 0,
+	OpenOnSwitchOFF
+};
+
+USTRUCT(BlueprintType)
+struct FSwitches
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	ASMSwitchBase* Switch = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, DisplayName = "Open On Switch(ON/OFF)")
+	EOpenOn OpenOn = EOpenOn::OpenOnSwitchON;
 };

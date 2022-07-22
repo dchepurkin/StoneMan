@@ -38,7 +38,7 @@ void ASMLaserCube::BeginPlay()
 
 void ASMLaserCube::UpdateLaserColor() const
 {
-	LaserComponent->SetLaserColor(ElementComponent->GetElementColor());
+	if(LaserComponent) LaserComponent->SetLaserColor(ElementComponent->GetElementColor());
 }
 
 void ASMLaserCube::OnDetectLaserTrigger(AActor* Actor)

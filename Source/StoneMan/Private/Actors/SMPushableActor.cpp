@@ -206,5 +206,5 @@ void ASMPushableActor::CreateCollision(UBoxComponent*& Collision, const FName& C
 
 void ASMPushableActor::ResetCondition()
 {
-	SetActorLocation(StartPosition);
+	if(GetActorLocation() != StartPosition) SetActorLocation(StartPosition);
 }

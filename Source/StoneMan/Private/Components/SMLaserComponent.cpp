@@ -15,7 +15,7 @@ void USMLaserComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Laser = UNiagaraFunctionLibrary::SpawnSystemAttached(LaserNiagaraSystem, this, NAME_None, GetRelativeLocation(), GetRelativeRotation(),
+	Laser = UNiagaraFunctionLibrary::SpawnSystemAttached(LaserNiagaraSystem, this, NAME_None, FVector::ZeroVector, FRotator::ZeroRotator,
 	                                                     EAttachLocation::SnapToTarget, false);
 
 	check(Laser);
@@ -33,7 +33,7 @@ void USMLaserComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	FVector LaserEnd;
 	FHitResult HitResult;
 	MakeLaser(LaserEnd, HitResult);
-	
+
 	if(IsDamaged) SetDamageTimerEnabled(HitResult.GetActor());
 	else CheckForPriviewLaser(HitResult) ? TryToDetectLaserTrigger(HitResult) : ClearLaserTrigger();
 
@@ -42,7 +42,7 @@ void USMLaserComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 void USMLaserComponent::SetLaserColor(const FLinearColor& NewColor) const
 {
-	Laser->SetNiagaraVariableLinearColor(LaserColorParameterName, NewColor);
+	Laser->SetNiagaraVariableLinearColor(LaserColorParameterName, IsDamaged ? DamageColor : NewColor);
 }
 
 void USMLaserComponent::RotateLaser()
@@ -109,7 +109,11 @@ void USMLaserComponent::TryToDetectLaserTrigger(const FHitResult& HitResult)
 {
 	if(HitResult.GetComponent() && HitResult.GetComponent()->ComponentHasTag(LaserTriggerTag))
 	{
-		CurrentLaserTrigger = HitResult.GetActor();
+		if(CurrentLaserTrigger != HitResult.GetActor())
+		{
+			ClearLaserTrigger();
+			CurrentLaserTrigger = HitResult.GetActor();
+		}		
 		OnDetectLaserTrigger.Broadcast(CurrentLaserTrigger);
 	}
 	else ClearLaserTrigger();

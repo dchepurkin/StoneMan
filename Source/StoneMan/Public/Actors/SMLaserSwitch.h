@@ -31,11 +31,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Components)
 	USMElementComponent* ElementComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMSwitch, meta=(ClampMin = 0.1f))
-	float EmissiveON = 10.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMSwitch, meta=(ClampMin = 0.001f))
+	float EmissiveON = 0.3f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMSwitch, meta=(ClampMin = 0.1f))
-	float EmissiveOFF = 0.1f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMSwitch, meta=(ClampMin = 0.001f))
+	float EmissiveOFF = 0.01f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMSwitch)
 	FName EmissiveParamName = "Emissive";
