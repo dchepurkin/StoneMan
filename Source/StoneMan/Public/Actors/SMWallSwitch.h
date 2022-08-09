@@ -38,10 +38,10 @@ protected:
 	float SwitchAngle = 110.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="SMSwitch|Messages")
-	FString InteractionMessageON = TEXT("Включить");
+	FString InteractionMessageON = TEXT("ON");
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="SMSwitch|Messages")
-	FString InteractionMessageOFF = TEXT("Выключить");
+	FString InteractionMessageOFF = TEXT("OFF");
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="SMSwitch|LightColor")
 	FName LightColorParameterName = "LightColor";

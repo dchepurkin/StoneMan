@@ -95,7 +95,13 @@ void ASMPlayerCharacter::BeginPlay()
 
 void ASMPlayerCharacter::MoveForward(float AxisValue)
 {
-	if(PlayerState == ESMPlayerState::Push || FMath::IsNearlyZero(AxisValue)) return;
+	if(FMath::IsNearlyZero(AxisValue))
+	{
+		if(PlayerState == ESMPlayerState::Push) PushComponent->StopPush();
+		return;
+	}
+
+	if(PlayerState == ESMPlayerState::Push) return;
 
 	const auto Rotation = GetControlRotation();
 	const auto YawRotation = FRotator(0.f, Rotation.Yaw, 0.f);
