@@ -23,8 +23,7 @@ public:
 	virtual void Activate(const ESMElement Element) override;
 	virtual void Disactivate() override;
 
-	virtual void OnConstruction(const FTransform& Transform) override;
-	void SetNextLaserEnabled(const bool Enabled) const;
+	virtual void OnConstruction(const FTransform& Transform) override;	
 
 protected:
 	virtual void BeginPlay() override;
@@ -59,6 +58,7 @@ protected:
 private:
 	void OnDetectLaserTrigger(AActor* Actor);
 	void OnLoseLaserTrigger(AActor* Actor);
+	void SetNextLaserEnabled(const bool Enabled) const;
 
 	void UpdateColor() const;
 	void UpdateLaserColor() const;

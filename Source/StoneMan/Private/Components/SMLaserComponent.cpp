@@ -86,7 +86,7 @@ bool USMLaserComponent::CheckForPriviewLaser(const FHitResult& HitResult) const
 
 bool USMLaserComponent::CheckForCharacter(const FHitResult& HitResult) const
 {
-	return HitResult.bBlockingHit ? HitResult.GetActor()->IsA(ASMCharacterBase::StaticClass()) : false;
+	return HitResult.GetActor() ? HitResult.GetActor()->IsA(ASMCharacterBase::StaticClass()) : false;
 }
 
 void USMLaserComponent::MakeDamage(AActor* DamagedActor) const
