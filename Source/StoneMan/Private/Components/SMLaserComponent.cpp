@@ -3,6 +3,7 @@
 #include "Components/SMLaserComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "SMCharacterBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogLaserComponent, All, All);
 
@@ -33,6 +34,8 @@ void USMLaserComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	FVector LaserEnd;
 	FHitResult HitResult;
 	MakeLaser(LaserEnd, HitResult);
+
+	if(CheckForCharacter(HitResult)) OnDetectCharacter.Broadcast();
 
 	if(IsDamaged) SetDamageTimerEnabled(HitResult.GetActor());
 	else CheckForPriviewLaser(HitResult) ? TryToDetectLaserTrigger(HitResult) : ClearLaserTrigger();
@@ -81,6 +84,11 @@ bool USMLaserComponent::CheckForPriviewLaser(const FHitResult& HitResult) const
 	return HitResult.GetActor()->FindComponentByClass<USMLaserComponent>()->CurrentLaserTrigger != GetOwner();
 }
 
+bool USMLaserComponent::CheckForCharacter(const FHitResult& HitResult) const
+{
+	return HitResult.bBlockingHit ? HitResult.GetActor()->IsA(ASMCharacterBase::StaticClass()) : false;
+}
+
 void USMLaserComponent::MakeDamage(AActor* DamagedActor) const
 {
 	if(DamagedActor) DamagedActor->TakeDamage(Damage, FDamageEvent(), nullptr, nullptr);
@@ -107,13 +115,15 @@ void USMLaserComponent::SetDamageTimerEnabled(AActor* DamagedActor)
 
 void USMLaserComponent::TryToDetectLaserTrigger(const FHitResult& HitResult)
 {
+	if(!CanReflect) return;
+	
 	if(HitResult.GetComponent() && HitResult.GetComponent()->ComponentHasTag(LaserTriggerTag))
 	{
 		if(CurrentLaserTrigger != HitResult.GetActor())
 		{
 			ClearLaserTrigger();
 			CurrentLaserTrigger = HitResult.GetActor();
-		}		
+		}
 		OnDetectLaserTrigger.Broadcast(CurrentLaserTrigger);
 	}
 	else ClearLaserTrigger();

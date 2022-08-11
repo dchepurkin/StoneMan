@@ -3,6 +3,7 @@
 #include "Actors/SMResetPushableActor.h"
 
 #include "SMPushableActor.h"
+#include "SMSwitchBase.h"
 #include "Components/TimelineComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
@@ -61,6 +62,11 @@ void ASMResetPushableActor::ResetActors()
 	for(const auto ActorToReset : ActorsToReset)
 	{
 		if(ActorToReset) ActorToReset->ResetCondition();
+	}
+
+	for(const auto SwitchToReset : SwitchesToReset)
+	{
+		if(SwitchToReset) SwitchToReset->ResetSwitch();
 	}
 }
 

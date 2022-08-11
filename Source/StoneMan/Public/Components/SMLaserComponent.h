@@ -8,6 +8,7 @@
 
 class UNiagaraComponent;
 class UNiagaraSystem;
+class ASMCharacterBase;
 
 UENUM(BlueprintType)
 enum class ESMLaserDirestion : uint8
@@ -20,6 +21,7 @@ enum class ESMLaserDirestion : uint8
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnDetectLaserTriggerSignature, AActor*)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnLoseLaserTriggerSignature, AActor*)
+DECLARE_MULTICAST_DELEGATE(FOnDetectCharacterSignature)
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class STONEMAN_API USMLaserComponent : public USceneComponent
@@ -29,6 +31,7 @@ class STONEMAN_API USMLaserComponent : public USceneComponent
 public:
 	FOnDetectLaserTriggerSignature OnDetectLaserTrigger;
 	FOnLoseLaserTriggerSignature OnLoseLaserTrigger;
+	FOnDetectCharacterSignature OnDetectCharacter;
 
 	USMLaserComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -39,6 +42,7 @@ public:
 	void SetLaserDirection(const FVector& NewDirection) { CurrentLaserDirection = NewDirection; }
 	bool IsEnabled() const { return bEnabled; }
 	bool IsUndisablable() const { return Undisabable; }
+	void SetReflect(const bool NewReflect) { CanReflect = NewReflect; }
 
 	UFUNCTION(BlueprintCallable)
 	const FVector& GetConstructionLaserDirection() const { return LaserDirectionMap[LaserDirestion]; }
@@ -56,7 +60,7 @@ protected:
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="SMLaserComponent|Damage")
 	bool IsDamaged = false;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="SMLaserComponent|Damage", meta=(ClampMin = 0.001f, EditCondition=IsDamaged))
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="SMLaserComponent|Damage", meta=(ClampMin = 0.f, EditCondition=IsDamaged))
 	float Damage = 0.5f;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category="SMLaserComponent|Damage", meta=(ClampMin = 0.001f, EditCondition=IsDamaged))
@@ -81,6 +85,8 @@ protected:
 
 private:
 	bool Undisabable = false;
+	bool CanReflect = true;
+
 	FTimerHandle DamageTimerHandle;
 
 	FVector CurrentLaserDirection;
@@ -106,6 +112,7 @@ private:
 	void ClearLaserTrigger();
 	void MakeLaser(FVector& LaserEnd, FHitResult& HitResult) const;
 	bool CheckForPriviewLaser(const FHitResult& HitResult) const;
+	bool CheckForCharacter(const FHitResult& HitResult) const;
 
 	void MakeDamage(AActor* DamagedActor) const;
 	void SetDamageTimerEnabled(AActor* DamagedActor);

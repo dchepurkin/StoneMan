@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "SMResetPushableActor.generated.h"
 
+class ASMSwitchBase;
 class USoundCue;
 class ASMPushableActor;
 class UTimelineComponent;
@@ -35,6 +36,9 @@ protected:
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category=SMReseter)
 	TArray<ASMPushableActor*> ActorsToReset;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category=SMReseter)
+	TArray<ASMSwitchBase*> SwitchesToReset;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=SMReseter)
 	UCurveFloat* TimelineCurve;

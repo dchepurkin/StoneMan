@@ -17,6 +17,7 @@ public:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void Interact(AActor* WhoInteract) override;
 	virtual void SetOutlineVisible(const bool Visible) override;
+	virtual void ResetSwitch() override;
 
 	UFUNCTION(BlueprintCallable)
 	virtual const FString& GetInteractionMessage() const override { return bSwitched ? InteractionMessageOFF : InteractionMessageON; }
@@ -57,7 +58,7 @@ protected:
 
 	virtual void BeginPlay() override;
 
-private:
+private:	
 	FRotator EnabledRotation;
 	FRotator DisabledRotation;
 	FOnTimelineFloat OnSwitchTimeline;

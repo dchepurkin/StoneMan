@@ -59,6 +59,13 @@ void ASMWallSwitch::SetOutlineVisible(const bool Visible)
 	BaseMesh->SetRenderCustomDepth(Visible);
 }
 
+void ASMWallSwitch::ResetSwitch()
+{
+	SetSwitchEnabled(IsEnabled);
+	SetSwitchRotation(bSwitched ? EnabledRotation : DisabledRotation);
+	SetLightColor(bSwitched ? ONColor : OFFColor);
+}
+
 void ASMWallSwitch::OnSwitchTimelineCallback(float Alpha)
 {
 	const auto CurrentRotation = FMath::Lerp(DisabledRotation, EnabledRotation, Alpha);

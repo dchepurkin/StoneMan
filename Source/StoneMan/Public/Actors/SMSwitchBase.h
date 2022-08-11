@@ -20,6 +20,7 @@ public:
 
 	ASMSwitchBase();
 	bool IsEnabled() const { return bSwitched; }
+	virtual void ResetSwitch() {};
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="SMSwitch|Sounds")

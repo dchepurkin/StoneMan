@@ -17,6 +17,8 @@ void ASMSwitchBase::BeginPlay()
 
 void ASMSwitchBase::SetSwitchEnabled(const bool Enabled)
 {
+	if(bSwitched == Enabled) return;
+	
 	bSwitched = Enabled;	
 	OnChangeSwitchEnabled.Broadcast();
 
